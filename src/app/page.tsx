@@ -15,11 +15,44 @@ const defaultStartNumbers: StartNumbers = {
   gas: 0,
 };
 
+function ConfirmDialog({
+  message,
+  onConfirm,
+  onCancel,
+}: {
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6">
+        <p className="text-gray-900 dark:text-white mb-6">{message}</p>
+        <div className="flex gap-3">
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+          >
+            Delete
+          </button>
+          <button
+            onClick={onCancel}
+            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [readings, setReadings] = useState<EnergyReading[]>([]);
   const [startNumbers, setStartNumbers] = useState<StartNumbers>(defaultStartNumbers);
   const [isLoaded, setIsLoaded] = useState(false);
   const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     const savedReadings = localStorage.getItem(STORAGE_KEY_READINGS);
@@ -72,15 +105,18 @@ export default function Home() {
   };
 
   const handleDeleteReading = (id: string) => {
-    console.log("Delete requested for ID:", id);
-    if (confirm("Are you sure you want to delete this reading?")) {
-      console.log("Confirmed delete for ID:", id);
-      setReadings((prev) => {
-        const filtered = prev.filter((r) => r.id !== id);
-        console.log("Readings before:", prev.length, "after:", filtered.length);
-        return filtered;
-      });
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmId) {
+      setReadings((prev) => prev.filter((r) => r.id !== deleteConfirmId));
+      setDeleteConfirmId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmId(null);
   };
 
   const handleSaveStartNumbers = (numbers: StartNumbers) => {
@@ -116,6 +152,14 @@ export default function Home() {
             Track your electricity and gas usage over time
           </p>
         </header>
+
+        {deleteConfirmId && (
+          <ConfirmDialog
+            message="Are you sure you want to delete this reading?"
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
 
         <StartNumberSettings
           startNumbers={startNumbers}
