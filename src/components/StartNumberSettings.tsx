@@ -12,157 +12,132 @@ export default function StartNumberSettings({
   startNumbers,
   onSaveStartNumbers,
 }: StartNumberSettingsProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [electricityDay, setElectricityDay] = useState(startNumbers.electricityDay.toString());
   const [electricityNight, setElectricityNight] = useState(startNumbers.electricityNight.toString());
   const [gas, setGas] = useState(startNumbers.gas.toString());
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSave = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newErrors: Record<string, string> = {};
+
+    if (electricityDay && (isNaN(Number(electricityDay)) || Number(electricityDay) < 0)) {
+      newErrors.electricityDay = "Must be a valid number";
+    }
+
+    if (electricityNight && (isNaN(Number(electricityNight)) || Number(electricityNight) < 0)) {
+      newErrors.electricityNight = "Must be a valid number";
+    }
+
+    if (gas && (isNaN(Number(gas)) || Number(gas) < 0)) {
+      newErrors.gas = "Must be a valid number";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     onSaveStartNumbers({
-      electricityDay: parseFloat(electricityDay) || 0,
-      electricityNight: parseFloat(electricityNight) || 0,
-      gas: parseFloat(gas) || 0,
+      electricityDay: Number(electricityDay) || 0,
+      electricityNight: Number(electricityNight) || 0,
+      gas: Number(gas) || 0,
     });
-    setIsEditing(false);
-  };
 
-  const handleCancel = () => {
-    setElectricityDay(startNumbers.electricityDay.toString());
-    setElectricityNight(startNumbers.electricityNight.toString());
-    setGas(startNumbers.gas.toString());
-    setIsEditing(false);
+    setErrors({});
   };
-
-  if (!isEditing) {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Initial Meter Readings
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Starting values before your first logged reading
-            </p>
-          </div>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-md transition-colors"
-          >
-            Edit
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
-              Electricity Day
-            </p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {startNumbers.electricityDay.toFixed(2)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">kWh</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
-              Electricity Night
-            </p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {startNumbers.electricityNight.toFixed(2)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">kWh</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-orange-700 dark:text-orange-400 font-medium">
-              Gas
-            </p>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {startNumbers.gas.toFixed(2)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">m³</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-        Edit Initial Meter Readings
-      </h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-        Set the meter readings at the start of tracking.
-      </p>
-      <div className="space-y-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left"
+      >
         <div>
-          <label
-            htmlFor="startElectricityDay"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Electricity Day - Initial Reading (kWh)
-          </label>
-          <input
-            type="number"
-            id="startElectricityDay"
-            value={electricityDay}
-            onChange={(e) => setElectricityDay(e.target.value)}
-            step="0.01"
-            min="0"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Start Numbers
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Set your initial meter readings to calculate usage from your first entry
+          </p>
         </div>
+        <svg
+          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
-        <div>
-          <label
-            htmlFor="startElectricityNight"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Electricity Night - Initial Reading (kWh)
-          </label>
-          <input
-            type="number"
-            id="startElectricityNight"
-            value={electricityNight}
-            onChange={(e) => setElectricityNight(e.target.value)}
-            step="0.01"
-            min="0"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+      {isOpen && (
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Enter the meter readings as shown when you started tracking. Leave at 0 if you do not know them.
+          </p>
 
-        <div>
-          <label
-            htmlFor="startGas"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
-            Gas - Initial Reading (m³)
-          </label>
-          <input
-            type="number"
-            id="startGas"
-            value={gas}
-            onChange={(e) => setGas(e.target.value)}
-            step="0.01"
-            min="0"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+          <div>
+            <label htmlFor="startElectricityDay" className="block text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
+              Electricity Day Start (kWh)
+            </label>
+            <input
+              type="number"
+              id="startElectricityDay"
+              value={electricityDay}
+              onChange={(e) => setElectricityDay(e.target.value)}
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {errors.electricityDay && <p className="text-red-500 text-sm mt-1">{errors.electricityDay}</p>}
+          </div>
 
-        <div className="flex gap-3">
+          <div>
+            <label htmlFor="startElectricityNight" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+              Electricity Night Start (kWh)
+            </label>
+            <input
+              type="number"
+              id="startElectricityNight"
+              value={electricityNight}
+              onChange={(e) => setElectricityNight(e.target.value)}
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {errors.electricityNight && <p className="text-red-500 text-sm mt-1">{errors.electricityNight}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="startGas" className="block text-sm font-medium text-orange-700 dark:text-orange-400 mb-1">
+              Gas Start (m³)
+            </label>
+            <input
+              type="number"
+              id="startGas"
+              value={gas}
+              onChange={(e) => setGas(e.target.value)}
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {errors.gas && <p className="text-red-500 text-sm mt-1">{errors.gas}</p>}
+          </div>
+
           <button
-            onClick={handleSave}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
           >
-            Save
+            Save Start Numbers
           </button>
-          <button
-            onClick={handleCancel}
-            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+        </form>
+      )}
     </div>
   );
 }
