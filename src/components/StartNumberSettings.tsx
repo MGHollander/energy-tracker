@@ -36,10 +36,15 @@ export default function StartNumberSettings({
   if (!isEditing) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Start Numbers
-          </h2>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Initial Meter Readings
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Starting values before your first logged reading
+            </p>
+          </div>
           <button
             onClick={() => setIsEditing(true)}
             className="text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-md transition-colors"
@@ -82,16 +87,19 @@ export default function StartNumberSettings({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-        Edit Start Numbers
+      <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+        Edit Initial Meter Readings
       </h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Set the meter readings at the start of tracking. All future usage will be calculated from these values.
+      </p>
       <div className="space-y-4">
         <div>
           <label
             htmlFor="startElectricityDay"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
-            Electricity Day Start (kWh)
+            Electricity Day - Initial Reading (kWh)
           </label>
           <input
             type="number"
@@ -109,7 +117,7 @@ export default function StartNumberSettings({
             htmlFor="startElectricityNight"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
-            Electricity Night Start (kWh)
+            Electricity Night - Initial Reading (kWh)
           </label>
           <input
             type="number"
@@ -127,7 +135,7 @@ export default function StartNumberSettings({
             htmlFor="startGas"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
-            Gas Start (m³)
+            Gas - Initial Reading (m³)
           </label>
           <input
             type="number"
