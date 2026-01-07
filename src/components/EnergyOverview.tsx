@@ -4,9 +4,11 @@ import { EnergyReading, MonthlySummary, YearlySummary } from "@/types/energy";
 
 interface EnergyOverviewProps {
   readings: EnergyReading[];
+  onEdit: (reading: EnergyReading) => void;
+  onDelete: (id: string) => void;
 }
 
-export default function EnergyOverview({ readings }: EnergyOverviewProps) {
+export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOverviewProps) {
   // Sort readings by date ascending
   const sortedReadings = [...readings].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -222,6 +224,9 @@ export default function EnergyOverview({ readings }: EnergyOverviewProps) {
                 <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                   Gas (m³)
                 </th>
+                <th className="text-center py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -247,6 +252,20 @@ export default function EnergyOverview({ readings }: EnergyOverviewProps) {
                     </td>
                     <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                       {reading.gas.toFixed(2)}
+                    </td>
+                    <td className="py-2 px-2 text-center">
+                      <button
+                        onClick={() => onEdit(reading)}
+                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-xs mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDelete(reading.id)}
+                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium text-xs"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

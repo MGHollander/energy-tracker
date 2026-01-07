@@ -19,6 +19,7 @@ export default function Home() {
   const [readings, setReadings] = useState<EnergyReading[]>([]);
   const [startNumbers, setStartNumbers] = useState<StartNumbers>(defaultStartNumbers);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
 
   useEffect(() => {
     const savedReadings = localStorage.getItem(STORAGE_KEY_READINGS);
@@ -63,6 +64,19 @@ export default function Home() {
     setReadings((prev) => [...prev, newReading]);
   };
 
+  const handleUpdateReading = (reading: EnergyReading) => {
+    setReadings((prev) =>
+      prev.map((r) => (r.id === reading.id ? reading : r))
+    );
+    setEditingReading(null);
+  };
+
+  const handleDeleteReading = (id: string) => {
+    if (confirm("Are you sure you want to delete this reading?")) {
+      setReadings((prev) => prev.filter((r) => r.id !== id));
+    }
+  };
+
   const handleSaveStartNumbers = (numbers: StartNumbers) => {
     setStartNumbers(numbers);
   };
@@ -103,7 +117,13 @@ export default function Home() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <EnergyInputForm onAddReading={handleAddReading} lastReading={lastReading} />
+          <EnergyInputForm
+            onAddReading={handleAddReading}
+            lastReading={lastReading}
+            editingReading={editingReading}
+            onUpdateReading={handleUpdateReading}
+            onCancelEdit={() => setEditingReading(null)}
+          />
           
           {/* Quick Stats */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -139,7 +159,11 @@ export default function Home() {
           </div>
         </div>
 
-        <EnergyOverview readings={readings} />
+        <EnergyOverview
+          readings={readings}
+          onEdit={setEditingReading}
+          onDelete={handleDeleteReading}
+        />
       </div>
     </main>
   );

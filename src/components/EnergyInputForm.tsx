@@ -1,40 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EnergyReading } from "@/types/energy";
 
 interface EnergyInputFormProps {
   onAddReading: (reading: Omit<EnergyReading, "id">) => void;
+  onUpdateReading: (reading: EnergyReading) => void;
+  onCancelEdit: () => void;
   lastReading: EnergyReading | null;
+  editingReading: EnergyReading | null;
 }
 
-export default function EnergyInputForm({ onAddReading, lastReading }: EnergyInputFormProps) {
+export default function EnergyInputForm({
+  onAddReading,
+  onUpdateReading,
+  onCancelEdit,
+  lastReading,
+  editingReading,
+}: EnergyInputFormProps) {
   const [date, setDate] = useState("");
   const [electricityDay, setElectricityDay] = useState("");
   const [electricityNight, setElectricityNight] = useState("");
   const [gas, setGas] = useState("");
 
+  useEffect(() => {
+    if (editingReading) {
+      setDate(editingReading.date);
+      setElectricityDay(editingReading.electricityDay.toString());
+      setElectricityNight(editingReading.electricityNight.toString());
+      setGas(editingReading.gas.toString());
+    } else {
+      setDate("");
+      setElectricityDay("");
+      setElectricityNight("");
+      setGas("");
+    }
+  }, [editingReading]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const reading: Omit<EnergyReading, "id"> = {
-      date: date,
-      electricityDay: parseFloat(electricityDay) || 0,
-      electricityNight: parseFloat(electricityNight) || 0,
-      gas: parseFloat(gas) || 0,
-    };
-
-    onAddReading(reading);
-    setDate("");
-    setElectricityDay("");
-    setElectricityNight("");
-    setGas("");
+    if (editingReading) {
+      const reading: EnergyReading = {
+        ...editingReading,
+        date,
+        electricityDay: parseFloat(electricityDay) || 0,
+        electricityNight: parseFloat(electricityNight) || 0,
+        gas: parseFloat(gas) || 0,
+      };
+      onUpdateReading(reading);
+    } else {
+      const reading: Omit<EnergyReading, "id"> = {
+        date,
+        electricityDay: parseFloat(electricityDay) || 0,
+        electricityNight: parseFloat(electricityNight) || 0,
+        gas: parseFloat(gas) || 0,
+      };
+      onAddReading(reading);
+      setDate("");
+      setElectricityDay("");
+      setElectricityNight("");
+      setGas("");
+    }
   };
+
+  const isEditing = !!editingReading;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-        Log Energy Usage
+        {isEditing ? "Edit Reading" : "Log Energy Usage"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -116,12 +151,23 @@ export default function EnergyInputForm({ onAddReading, lastReading }: EnergyInp
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Add Reading
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            {isEditing ? "Update Reading" : "Add Reading"}
+          </button>
+          {isEditing && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
