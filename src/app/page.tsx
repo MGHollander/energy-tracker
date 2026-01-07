@@ -72,8 +72,14 @@ export default function Home() {
   };
 
   const handleDeleteReading = (id: string) => {
+    console.log("Delete requested for ID:", id);
     if (confirm("Are you sure you want to delete this reading?")) {
-      setReadings((prev) => prev.filter((r) => r.id !== id));
+      console.log("Confirmed delete for ID:", id);
+      setReadings((prev) => {
+        const filtered = prev.filter((r) => r.id !== id);
+        console.log("Readings before:", prev.length, "after:", filtered.length);
+        return filtered;
+      });
     }
   };
 
