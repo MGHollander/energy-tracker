@@ -123,41 +123,40 @@ export default function Home() {
             onUpdateReading={handleUpdateReading}
             onCancelEdit={() => setEditingReading(null)}
           />
-          
-          {/* Current Meter Readings */}
-          {lastReading && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Current Meter Readings
-              </h2>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-yellow-700 dark:text-yellow-400 font-medium">
-                    Electricity Day
-                  </span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {lastReading.electricityDay.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-blue-700 dark:text-blue-400 font-medium">
-                    Electricity Night
-                  </span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {lastReading.electricityNight.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-orange-700 dark:text-orange-400 font-medium">
-                    Gas
-                  </span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {lastReading.gas.toFixed(2)}
-                  </span>
-                </div>
+
+          {/* Quick Stats */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Current Meter Readings
+            </h2>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-yellow-700 dark:text-yellow-400 font-medium">
+                  Electricity Day
+                </span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {lastReading ? lastReading.electricityDay.toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-700 dark:text-blue-400 font-medium">
+                  Electricity Night
+                </span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {lastReading ? lastReading.electricityNight.toFixed(2) : "0.00"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-orange-700 dark:text-orange-400 font-medium">
+                  Gas
+                </span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {lastReading ? lastReading.gas.toFixed(2) : "0.00"}
+                </span>
               </div>
             </div>
-          )}
+          </div>
+
         </div>
 
         <EnergyOverview
