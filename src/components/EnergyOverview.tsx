@@ -18,9 +18,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
   for (let i = 1; i < sortedReadings.length; i++) {
     const current = sortedReadings[i];
     const previous = sortedReadings[i - 1];
-    const month = current.date.substring(0, 7); // YYYY-MM
+    // The usage belongs to the month of the previous reading
+    const month = previous.date.substring(0, 7); // YYYY-MM
 
-    // Only include if this is the first reading of a new month
+    // Only include if this is the first delta for a given month
     const existingMonth = monthlySummaries.find(m => m.month === month);
     if (!existingMonth) {
       monthlySummaries.push({
