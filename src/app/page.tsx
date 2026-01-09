@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import EnergyInputForm from "@/components/EnergyInputForm";
 import EnergyOverview from "@/components/EnergyOverview";
 import { EnergyReading } from "@/types/energy";
@@ -12,6 +13,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedReadings = localStorage.getItem(STORAGE_KEY_READINGS);
@@ -61,6 +63,15 @@ export default function Home() {
 
   const cancelDelete = () => {
     setDeleteConfirmId(null);
+  };
+
+  const handleEditWithScroll = (reading: EnergyReading) => {
+    setEditingReading(reading);
+    scrollToForm();
+  };
+
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const lastReading = readings.length > 0 
@@ -115,7 +126,7 @@ export default function Home() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" ref={formRef}>
           <EnergyInputForm
             onAddReading={handleAddReading}
             lastReading={lastReading}
@@ -161,7 +172,7 @@ export default function Home() {
 
         <EnergyOverview
           readings={readings}
-          onEdit={setEditingReading}
+          onEdit={handleEditWithScroll}
           onDelete={handleDeleteReading}
         />
       </div>

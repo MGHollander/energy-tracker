@@ -124,7 +124,7 @@ export default function EnergyInputForm({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <div id="energy-form" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         {editingReading ? "Edit Reading" : "Add New Reading"}
       </h2>
