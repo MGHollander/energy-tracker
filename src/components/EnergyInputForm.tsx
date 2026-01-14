@@ -1,13 +1,14 @@
 "use client";
 
+import type React from "react";
 import { useState, useEffect } from "react";
 import { EnergyReading } from "@/types/energy";
 
 interface EnergyInputFormProps {
-  onAddReading: (reading: Omit<EnergyReading, "id">) => void;
+  onAddReading: (reading: Omit<EnergyReading, "id">) => Promise<void>;
   lastReading: EnergyReading | null;
   editingReading: EnergyReading | null;
-  onUpdateReading: (reading: EnergyReading) => void;
+  onUpdateReading: (reading: EnergyReading) => Promise<void>;
   onCancelEdit: () => void;
 }
 
@@ -28,6 +29,7 @@ export default function EnergyInputForm({
   const [electricityNight, setElectricityNight] = useState("");
   const [gas, setGas] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (editingReading) {
@@ -39,7 +41,7 @@ export default function EnergyInputForm({
       // Set default date to first day of current month
       const now = new Date();
       setDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`);
-      
+
       // Pre-fill with last reading values
       if (lastReading) {
         setElectricityDay(lastReading.electricityDay.toString());
@@ -89,32 +91,37 @@ export default function EnergyInputForm({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    const reading: Omit<EnergyReading, "id"> = {
-      date,
-      electricityDay: Number(electricityDay),
-      electricityNight: Number(electricityNight),
-      gas: Number(gas),
-    };
+    setIsSubmitting(true);
+    try {
+      const reading: Omit<EnergyReading, "id"> = {
+        date,
+        electricityDay: Number(electricityDay),
+        electricityNight: Number(electricityNight),
+        gas: Number(gas),
+      };
 
-    if (editingReading) {
-      onUpdateReading({ ...reading, id: editingReading.id } as EnergyReading);
-    } else {
-      onAddReading(reading);
+      if (editingReading) {
+        await onUpdateReading({ ...reading, id: editingReading.id } as EnergyReading);
+      } else {
+        await onAddReading(reading);
+      }
+
+      // Reset form with new default values
+      const now = new Date();
+      setDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`);
+      setElectricityDay(reading.electricityDay.toString());
+      setElectricityNight(reading.electricityNight.toString());
+      setGas(reading.gas.toString());
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Reset form with new default values
-    const now = new Date();
-    setDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`);
-    setElectricityDay(reading.electricityDay.toString());
-    setElectricityNight(reading.electricityNight.toString());
-    setGas(reading.gas.toString());
   };
 
   const formatDisplayDate = (dateStr: string) => {
@@ -217,9 +224,10 @@ export default function EnergyInputForm({
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+            disabled={isSubmitting}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
           >
-            {editingReading ? "Update Reading" : "Add Reading"}
+            {isSubmitting ? "Saving..." : (editingReading ? "Update Reading" : "Add Reading")}
           </button>
           {editingReading && (
             <button

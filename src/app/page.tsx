@@ -1,52 +1,30 @@
-
 "use client";
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import EnergyInputForm from "@/components/EnergyInputForm";
 import EnergyOverview from "@/components/EnergyOverview";
-import { EnergyReading } from "@/types/energy";
+import Auth from "@/components/Auth";        // REPLACE: { Auth }
+import { EnergyReading } from "@/types/energy";     // => { { EnergyReading } }
+import { useAuth } from "@/lib/auth-context";        // REPLACE: { useAuth }
+import { useEnergyReadings, useCreateEnergyReading, useUpdateEnergyReading, useDeleteEnergyReading } from "@/hooks/useEnergyReadings";    // REPLACE: { { useEnergyReadings hook replaced by { variant hooks } }
 
-const STORAGE_KEY_READINGS = "energy_tracker_readings";
 
 export default function Home() {
-  const [readings, setReadings] = useState<EnergyReading[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const { readings, loading: readingsLoading, error: readingsError } = useEnergyReadings();
+  const { create, loading: createLoading, error: createError } = useCreateEnergyReading();
+  const { update, loading: updateLoading, error: updateError } = useUpdateEnergyReading();
+  const { deleteReading, loading: deleteLoading, error: deleteError } = useDeleteEnergyReading();
   const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const savedReadings = localStorage.getItem(STORAGE_KEY_READINGS);
 
-    if (savedReadings) {
-      try {
-        setReadings(JSON.parse(savedReadings));
-      } catch {
-        console.error("Failed to parse saved readings");
-      }
-    }
-
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY_READINGS, JSON.stringify(readings));
-    }
-  }, [readings, isLoaded]);
-
-  const handleAddReading = (reading: Omit<EnergyReading, "id">) => {
-    const newReading: EnergyReading = {
-      ...reading,
-      id: `${reading.date}-${Date.now()}`,
-    };
-    setReadings((prev) => [...prev, newReading]);
+  const handleAddReading = async (reading: Omit<EnergyReading, "id">) => {
+    await create(reading);
   };
 
-  const handleUpdateReading = (reading: EnergyReading) => {
-    setReadings((prev) =>
-      prev.map((r) => (r.id === reading.id ? reading : r))
-    );
+  const handleUpdateReading = async (reading: EnergyReading) => {
+    await update(reading.id, reading);
     setEditingReading(null);
   };
 
@@ -54,9 +32,9 @@ export default function Home() {
     setDeleteConfirmId(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteConfirmId) {
-      setReadings((prev) => prev.filter((r) => r.id !== deleteConfirmId));
+      await deleteReading(deleteConfirmId);
       setDeleteConfirmId(null);
     }
   };
@@ -74,13 +52,33 @@ export default function Home() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const lastReading = readings.length > 0 
-    ? readings.reduce((latest, current) => 
-        current.date > latest.date ? current : latest
-      )
+  const lastReading = readings.length > 0
+    ? readings.reduce((latest, current) =>
+      current.date > latest.date ? current : latest
+    )
     : null;
 
-  if (!isLoaded) {
+  if (authLoading) {
+    return (
+      <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-gray-600 dark:text-gray-400">
+            Loading...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <Auth />
+      </main>
+    );
+  }
+
+  if (readingsLoading) {
     return (
       <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
@@ -96,12 +94,17 @@ export default function Home() {
     <main className="min-h-screen p-4 md:p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto space-y-6">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Energy Tracker
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track your electricity and gas usage over time
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Energy Tracker
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Track your electricity and gas usage over time
+              </p>
+            </div>
+            <Auth />
+          </div>
         </header>
 
         {deleteConfirmId && (

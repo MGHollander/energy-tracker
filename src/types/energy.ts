@@ -4,12 +4,9 @@ export interface EnergyReading {
   electricityDay: number; // Electricity usage during daylight (kWh)
   electricityNight: number; // Electricity usage at night (kWh)
   gas: number; // Gas usage (m³ or kWh depending on region)
-}
-
-export interface StartNumbers {
-  electricityDay: number;
-  electricityNight: number;
-  gas: number;
+  user_id: string; // User ID from Supabase
+  created_at: string; // Created timestamp
+  updated_at: string; // Updated timestamp
 }
 
 export interface MonthlySummary {
