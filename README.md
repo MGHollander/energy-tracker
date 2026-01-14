@@ -35,7 +35,7 @@ This application helps users monitor their energy consumption over time. It prov
 ### Prerequisites
 
 - Node.js (version 18 or higher)
-- npm, pnpm, or bun
+- pnpm
 
 ### Installation
 
@@ -49,21 +49,13 @@ This application helps users monitor their energy consumption over time. It prov
 2. Install dependencies:
 
    ```bash
-   npm install
-   # or
    pnpm install
-   # or
-   bun install
    ```
 
 3. Run the development server:
 
    ```bash
-   npm run dev
-   # or
    pnpm dev
-   # or
-   bun dev
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -79,7 +71,6 @@ src/
 ├── components/
 │   ├── EnergyInputForm.tsx      # Form for logging readings
 │   ├── EnergyOverview.tsx       # Monthly/yearly summaries
-│   └── StartNumberSettings.tsx  # Start number configuration
 └── types/
     └── energy.ts        # TypeScript interfaces
 ```
@@ -87,7 +78,6 @@ src/
 ## Type Definitions (`src/types/energy.ts`)
 
 - `EnergyReading`: Individual meter reading entry
-- `StartNumbers`: Initial meter readings
 - `MonthlySummary`: Aggregated monthly data
 - `YearlySummary`: Aggregated yearly data with monthly breakdown
 

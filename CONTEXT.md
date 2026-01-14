@@ -40,7 +40,6 @@ src/
 ├── components/
 │   ├── EnergyInputForm.tsx      # Form for logging readings
 │   ├── EnergyOverview.tsx       # Monthly/yearly summaries
-│   └── StartNumberSettings.tsx  # Start number configuration
 └── types/
     └── energy.ts        # TypeScript interfaces
 ```
@@ -48,7 +47,6 @@ src/
 ## Type Definitions (`src/types/energy.ts`)
 
 - `EnergyReading`: Individual meter reading entry
-- `StartNumbers`: Initial meter readings
 - `MonthlySummary`: Aggregated monthly data
 - `YearlySummary`: Aggregated yearly data with monthly breakdown
 
