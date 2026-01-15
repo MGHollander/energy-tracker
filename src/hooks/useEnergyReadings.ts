@@ -48,7 +48,6 @@ export function useEnergyReadings() {
         .eq('user_id', user.id)
         .order('date', { ascending: true });
 
-      console.log('DEBUG: Fetch readings - data:', data, 'error:', error);
       if (error) {
         setError(error.message);
       } else {
@@ -62,17 +61,22 @@ export function useEnergyReadings() {
 
     // Subscribe to changes
     const channel = supabase
-      .channel('energy_readings_changes')
+      .channel('energy_readings_changes_v2')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'energy_readings',
-          filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('DEBUG: Realtime payload:', payload);
+          // Only process changes for the current user
+          if (payload.new && (payload.new as any).user_id !== user.id) {
+            return;
+          }
+          if (payload.old && payload.eventType === 'DELETE' && (payload.old as any).user_id !== user.id) {
+            return;
+          }
           if (payload.eventType === 'INSERT') {
             setReadings(prev => [...prev, transformRowToReading(payload.new as EnergyReadingRow)].sort((a, b) => a.date.localeCompare(b.date)));
           } else if (payload.eventType === 'UPDATE') {
@@ -101,7 +105,6 @@ export function useCreateEnergyReading() {
     if (!user) return null;
     setLoading(true);
     setError(null);
-    console.log('DEBUG: Creating reading:', reading);
     const { data, error } = await supabase
       .from('energy_readings')
       .insert({
@@ -114,7 +117,6 @@ export function useCreateEnergyReading() {
       .select()
       .single();
 
-    console.log('DEBUG: Insert result - data:', data, 'error:', error);
     if (error) {
       setError(error.message);
     }
