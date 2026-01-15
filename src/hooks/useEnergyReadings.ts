@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth-context';
 import { EnergyReading, EnergyReadingInput } from '../types/energy';
+import { addEnergyReading } from '../actions/addEnergyReading';
 
 type EnergyReadingRow = {
   id: string;
@@ -123,23 +124,15 @@ export function useCreateEnergyReading() {
     if (!user) return null;
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase
-      .from('energy_readings')
-      .insert({
-        user_id: user.id,
-        date: reading.date,
-        electricity_day: reading.electricityDay,
-        electricity_night: reading.electricityNight,
-        gas: reading.gas,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      setError(error.message);
+    try {
+      const data = await addEnergyReading(reading);
+      setLoading(false);
+      return transformRowToReading(data);
+    } catch (err) {
+      setError((err as Error).message);
+      setLoading(false);
+      return null;
     }
-    setLoading(false);
-    return data ? transformRowToReading(data) : null;
   };
 
   return { create, loading, error };
