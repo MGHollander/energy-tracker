@@ -146,7 +146,7 @@ export default function EnergyInputForm({
             onChange={(e) => setElectricityDay(e.target.value)}
             step="1"
             min="0"
-            placeholder="0"
+            placeholder={lastReading ? lastReading.electricityDay.toString() : "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
@@ -164,7 +164,7 @@ export default function EnergyInputForm({
             onChange={(e) => setElectricityNight(e.target.value)}
             step="1"
             min="0"
-            placeholder="0"
+            placeholder={lastReading ? lastReading.electricityNight.toString() : "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
@@ -182,7 +182,7 @@ export default function EnergyInputForm({
             onChange={(e) => setGas(e.target.value)}
             step="1"
             min="0"
-            placeholder="0"
+            placeholder={lastReading ? lastReading.gas.toString() : "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
