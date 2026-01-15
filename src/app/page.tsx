@@ -5,15 +5,14 @@ import EnergyOverview from "@/components/EnergyOverview";
 import Auth from "@/components/Auth";        // REPLACE: { Auth }
 import { EnergyReading, EnergyReadingInput } from "@/types/energy";     // => { { EnergyReading } }
 import { useAuth } from "@/lib/auth-context";        // REPLACE: { useAuth }
-import { useEnergyReadings, useCreateEnergyReading, useUpdateEnergyReading, useDeleteEnergyReading } from "@/hooks/useEnergyReadings";    // REPLACE: { { useEnergyReadings hook replaced by { variant hooks } }
+import { useEnergyReadings, useCreateEnergyReading, useUpdateEnergyReading } from "@/hooks/useEnergyReadings";    // REPLACE: { { useEnergyReadings hook replaced by { variant hooks } }
 
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
-  const { readings, loading: readingsLoading, error: readingsError } = useEnergyReadings();
+  const { readings, loading: readingsLoading, error: readingsError, deleteReading, deleteLoading, deleteError } = useEnergyReadings();
   const { create, loading: createLoading, error: createError } = useCreateEnergyReading();
   const { update, loading: updateLoading, error: updateError } = useUpdateEnergyReading();
-  const { deleteReading, loading: deleteLoading, error: deleteError } = useDeleteEnergyReading();
   const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);

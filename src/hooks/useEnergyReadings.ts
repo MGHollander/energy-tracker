@@ -32,6 +32,24 @@ export function useEnergyReadings() {
   const [readings, setReadings] = useState<EnergyReading[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const deleteReading = async (id: string) => {
+    setDeleteLoading(true);
+    setDeleteError(null);
+    const { error } = await supabase
+      .from('energy_readings')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      setDeleteError(error.message);
+    } else {
+      setReadings(prev => prev.filter(r => r.id !== id));
+    }
+    setDeleteLoading(false);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -71,10 +89,10 @@ export function useEnergyReadings() {
         },
         (payload) => {
           // Only process changes for the current user
-          if (payload.new && (payload.new as any).user_id !== user.id) {
+          if (payload.new && (payload.new as EnergyReadingRow).user_id !== user.id) {
             return;
           }
-          if (payload.old && payload.eventType === 'DELETE' && (payload.old as any).user_id !== user.id) {
+          if (payload.old && payload.eventType === 'DELETE' && (payload.old as EnergyReadingRow).user_id !== user.id) {
             return;
           }
           if (payload.eventType === 'INSERT') {
@@ -93,7 +111,7 @@ export function useEnergyReadings() {
     };
   }, [user]);
 
-  return { readings, loading, error };
+  return { readings, loading, error, deleteReading, deleteLoading, deleteError };
 }
 
 export function useCreateEnergyReading() {
@@ -155,25 +173,4 @@ export function useUpdateEnergyReading() {
   };
 
   return { update, loading, error };
-}
-
-export function useDeleteEnergyReading() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const deleteReading = async (id: string) => {
-    setLoading(true);
-    setError(null);
-    const { error } = await supabase
-      .from('energy_readings')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      setError(error.message);
-    }
-    setLoading(false);
-  };
-
-  return { deleteReading, loading, error };
 }
