@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth-context';
-import { EnergyReading } from '../types/energy';
+import { EnergyReading, EnergyReadingInput } from '../types/energy';
 
 type EnergyReadingRow = {
   id: string;
@@ -20,6 +20,9 @@ const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   electricityDay: row.electricity_day,
   electricityNight: row.electricity_night,
   gas: row.gas,
+  user_id: row.user_id,
+  created_at: row.created_at,
+  updated_at: row.updated_at,
 });
 
 type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas'>>;
@@ -45,6 +48,7 @@ export function useEnergyReadings() {
         .eq('user_id', user.id)
         .order('date', { ascending: true });
 
+      console.log('DEBUG: Fetch readings - data:', data, 'error:', error);
       if (error) {
         setError(error.message);
       } else {
@@ -68,6 +72,7 @@ export function useEnergyReadings() {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
+          console.log('DEBUG: Realtime payload:', payload);
           if (payload.eventType === 'INSERT') {
             setReadings(prev => [...prev, transformRowToReading(payload.new as EnergyReadingRow)].sort((a, b) => a.date.localeCompare(b.date)));
           } else if (payload.eventType === 'UPDATE') {
@@ -92,10 +97,11 @@ export function useCreateEnergyReading() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const create = async (reading: Omit<EnergyReading, 'id'>) => {
+  const create = async (reading: EnergyReadingInput) => {
     if (!user) return null;
     setLoading(true);
     setError(null);
+    console.log('DEBUG: Creating reading:', reading);
     const { data, error } = await supabase
       .from('energy_readings')
       .insert({
@@ -108,6 +114,7 @@ export function useCreateEnergyReading() {
       .select()
       .single();
 
+    console.log('DEBUG: Insert result - data:', data, 'error:', error);
     if (error) {
       setError(error.message);
     }

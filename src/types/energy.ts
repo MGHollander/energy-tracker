@@ -9,6 +9,8 @@ export interface EnergyReading {
   updated_at: string; // Updated timestamp
 }
 
+export type EnergyReadingInput = Omit<EnergyReading, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
+
 export interface MonthlySummary {
   month: string; // YYYY-MM
   electricityDay: number;

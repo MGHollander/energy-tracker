@@ -2,10 +2,10 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { EnergyReading } from "@/types/energy";
+import { EnergyReading, EnergyReadingInput } from "@/types/energy";
 
 interface EnergyInputFormProps {
-  onAddReading: (reading: Omit<EnergyReading, "id">) => Promise<void>;
+  onAddReading: (reading: EnergyReadingInput) => Promise<void>;
   lastReading: EnergyReading | null;
   editingReading: EnergyReading | null;
   onUpdateReading: (reading: EnergyReading) => Promise<void>;
@@ -100,7 +100,7 @@ export default function EnergyInputForm({
 
     setIsSubmitting(true);
     try {
-      const reading: Omit<EnergyReading, "id"> = {
+      const reading: EnergyReadingInput = {
         date,
         electricityDay: Number(electricityDay),
         electricityNight: Number(electricityNight),

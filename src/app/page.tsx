@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import EnergyInputForm from "@/components/EnergyInputForm";
 import EnergyOverview from "@/components/EnergyOverview";
 import Auth from "@/components/Auth";        // REPLACE: { Auth }
-import { EnergyReading } from "@/types/energy";     // => { { EnergyReading } }
+import { EnergyReading, EnergyReadingInput } from "@/types/energy";     // => { { EnergyReading } }
 import { useAuth } from "@/lib/auth-context";        // REPLACE: { useAuth }
 import { useEnergyReadings, useCreateEnergyReading, useUpdateEnergyReading, useDeleteEnergyReading } from "@/hooks/useEnergyReadings";    // REPLACE: { { useEnergyReadings hook replaced by { variant hooks } }
 
@@ -19,7 +19,7 @@ export default function Home() {
   const formRef = useRef<HTMLDivElement>(null);
 
 
-  const handleAddReading = async (reading: Omit<EnergyReading, "id">) => {
+  const handleAddReading = async (reading: EnergyReadingInput) => {
     await create(reading);
   };
 
