@@ -140,17 +140,6 @@ export default function EnergyInputForm({
         Enter the meter readings as shown on your meters. Usage will be calculated automatically.
       </p>
 
-      {lastReading && !editingReading && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 mb-4">
-          <p className="text-sm text-blue-800 dark:text-blue-300">
-            <strong>Last reading:</strong> {formatDisplayDate(lastReading.date)}
-          </p>
-          <p className="text-sm text-blue-700 dark:text-blue-400">
-            Day: {lastReading.electricityDay.toFixed(2)} | Night: {lastReading.electricityNight.toFixed(2)} | Gas: {lastReading.gas.toFixed(2)}
-          </p>
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

@@ -128,7 +128,7 @@ export default function Home() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" ref={formRef}>
+        <div className="grid grid-cols-1 gap-6" ref={formRef}>
           <EnergyInputForm
             onAddReading={handleAddReading}
             lastReading={lastReading}
@@ -136,39 +136,6 @@ export default function Home() {
             onUpdateReading={handleUpdateReading}
             onCancelEdit={() => setEditingReading(null)}
           />
-
-          {/* Quick Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              Current Meter Readings
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-yellow-700 dark:text-yellow-400 font-medium">
-                  Electricity Day
-                </span>
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {lastReading ? lastReading.electricityDay.toFixed(2) : "0.00"}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-blue-700 dark:text-blue-400 font-medium">
-                  Electricity Night
-                </span>
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {lastReading ? lastReading.electricityNight.toFixed(2) : "0.00"}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-orange-700 dark:text-orange-400 font-medium">
-                  Gas
-                </span>
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {lastReading ? lastReading.gas.toFixed(2) : "0.00"}
-                </span>
-              </div>
-            </div>
-          </div>
 
         </div>
 
