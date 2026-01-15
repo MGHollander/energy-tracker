@@ -28,7 +28,7 @@ This application helps users monitor their energy consumption over time. It prov
 - **React**: 19.1.0
 - **Styling**: Tailwind CSS v4
 - **TypeScript**: Fully typed
-- **Storage**: localStorage for persistence
+- **Storage**: Supabase for data persistence
 
 ## Getting Started
 
@@ -51,6 +51,26 @@ This application helps users monitor their energy consumption over time. It prov
    ```bash
    pnpm install
    ```
+
+### Running Supabase Locally
+
+To run Supabase services locally for development:
+
+1. Start the local Supabase services:
+
+    ```bash
+    pnpm supabase start
+    ```
+
+2. Copy the example environment file and update it with your local Supabase credentials:
+
+    ```bash
+    cp example.env .env.local
+    ```
+
+    Edit `.env.local` with the values provided by `supabase start` (typically `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321` and the "Publishable" key under "Authentication Keys").
+
+### Running Development Server
 
 3. Run the development server:
 
@@ -99,8 +119,8 @@ src/
 
 ## Important Notes
 
-- Data is stored in localStorage and will persist across browser sessions
-- Clearing browser data will reset all readings
+- Data is stored in Supabase and persists across devices and sessions
+- User authentication is required to access personal data
 - The application uses cumulative readings (not delta/usage per period)
 
 ## Scripts
