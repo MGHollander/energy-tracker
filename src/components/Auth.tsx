@@ -29,7 +29,7 @@ export default function Auth() {
 
     if (user) {
         return (
-            <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 gap-4 text-xs">
                 <div>
                     <p className="text-gray-900 dark:text-white">
                         Logged in as: <span className="font-medium">{user.email}</span>
