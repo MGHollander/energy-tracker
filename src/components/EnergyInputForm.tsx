@@ -38,20 +38,14 @@ export default function EnergyInputForm({
       setElectricityNight(editingReading.electricityNight.toString());
       setGas(editingReading.gas.toString());
     } else {
-      // Set default date to first day of current month
+      // Set default date to today
       const now = new Date();
-      setDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`);
+      setDate(now.toISOString().split('T')[0]);
 
-      // Pre-fill with last reading values
-      if (lastReading) {
-        setElectricityDay(lastReading.electricityDay.toString());
-        setElectricityNight(lastReading.electricityNight.toString());
-        setGas(lastReading.gas.toString());
-      } else {
-        setElectricityDay("");
-        setElectricityNight("");
-        setGas("");
-      }
+      // Always start with empty fields
+      setElectricityDay("");
+      setElectricityNight("");
+      setGas("");
     }
   }, [editingReading, lastReading]);
 
@@ -72,19 +66,6 @@ export default function EnergyInputForm({
 
     if (!gas || isNaN(Number(gas)) || Number(gas) < 0) {
       newErrors.gas = "Valid gas reading is required";
-    }
-
-    // Check if readings are higher than previous (for non-first readings)
-    if (lastReading && !editingReading) {
-      if (Number(electricityDay) < lastReading.electricityDay) {
-        newErrors.electricityDay = "Electricity day reading must be higher than previous";
-      }
-      if (Number(electricityNight) < lastReading.electricityNight) {
-        newErrors.electricityNight = "Electricity night reading must be higher than previous";
-      }
-      if (Number(gas) < lastReading.gas) {
-        newErrors.gas = "Gas reading must be higher than previous";
-      }
     }
 
     setErrors(newErrors);
@@ -114,11 +95,9 @@ export default function EnergyInputForm({
       }
 
       // Reset form with new default values
-      const now = new Date();
-      setDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`);
-      setElectricityDay(reading.electricityDay.toString());
-      setElectricityNight(reading.electricityNight.toString());
-      setGas(reading.gas.toString());
+      setElectricityDay("");
+      setElectricityNight("");
+      setGas("");
     } finally {
       setIsSubmitting(false);
     }
@@ -165,9 +144,9 @@ export default function EnergyInputForm({
             id="electricityDay"
             value={electricityDay}
             onChange={(e) => setElectricityDay(e.target.value)}
-            step="0.01"
+            step="1"
             min="0"
-            placeholder="0.00"
+            placeholder="0"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
@@ -183,9 +162,9 @@ export default function EnergyInputForm({
             id="electricityNight"
             value={electricityNight}
             onChange={(e) => setElectricityNight(e.target.value)}
-            step="0.01"
+            step="1"
             min="0"
-            placeholder="0.00"
+            placeholder="0"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
@@ -201,9 +180,9 @@ export default function EnergyInputForm({
             id="gas"
             value={gas}
             onChange={(e) => setGas(e.target.value)}
-            step="0.01"
+            step="1"
             min="0"
-            placeholder="0.00"
+            placeholder="0"
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
