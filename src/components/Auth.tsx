@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 
 export default function Auth() {
-    const { user, signIn, signUp, signOut } = useAuth()
-    const [isLogin, setIsLogin] = useState(true)
+    const { user, signIn, signOut } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -16,9 +15,7 @@ export default function Auth() {
         setError('')
         setLoading(true)
 
-        const { error } = isLogin
-            ? await signIn(email, password)
-            : await signUp(email, password)
+        const { error } = await signIn(email, password)
 
         if (error) {
             setError(error)
@@ -48,7 +45,7 @@ export default function Auth() {
     return (
         <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-                {isLogin ? 'Login' : 'Sign Up'}
+                Login
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,18 +86,9 @@ export default function Auth() {
                     disabled={loading}
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors"
                 >
-                    {loading ? 'Loading...' : (isLogin ? 'Login' : 'Sign Up')}
+                    {loading ? 'Loading...' : 'Login'}
                 </button>
             </form>
-
-            <div className="mt-4 text-center">
-                <button
-                    onClick={() => setIsLogin(!isLogin)}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
-                >
-                    {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
-                </button>
-            </div>
         </div>
     )
 }
