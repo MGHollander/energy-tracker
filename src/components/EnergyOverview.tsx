@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { EnergyReading, MonthlySummary, YearlySummary } from "@/types/energy";
+import { exportAllReadingsOverwrite } from "@/actions/exportReadings";
 
 interface EnergyOverviewProps {
   readings: EnergyReading[];
@@ -82,11 +83,25 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
     yearlySummaries.map((_, index) => index === 0)
   );
   const [allReadingsExpanded, setAllReadingsExpanded] = useState(false);
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const formatMonth = (monthStr: string) => {
     const [year, month] = monthStr.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
     return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  };
+
+  const handleExportOverwrite = () => {
+    startTransition(async () => {
+      try {
+        await exportAllReadingsOverwrite();
+        alert('Export overwritten successfully');
+      } catch (error) {
+        const err = error as Error;
+        alert('Failed to overwrite export: ' + err.message);
+      }
+    });
   };
 
   if (readings.length === 0) {
@@ -230,12 +245,54 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             All Readings (Cumulative Meter Values)
           </h2>
-          <button
-            onClick={() => setAllReadingsExpanded(!allReadingsExpanded)}
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
-          >
-            {allReadingsExpanded ? 'Collapse' : 'Expand'}
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm px-3 py-1 border border-blue-600 dark:border-blue-400 rounded"
+              >
+                Export ▼
+              </button>
+              {exportDropdownOpen && (
+                <div className="absolute bottom-10 right-0 mt-1 w-64 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      handleExportOverwrite();
+                      setExportDropdownOpen(false);
+                    }}
+                    disabled={isPending}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50"
+                  >
+                    {isPending ? 'Overwriting...' : 'Export all readings'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.open('/api/export/all', '_blank')
+                      setExportDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Export all readings and download
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.open('/api/export/current', '_blank')
+                      setExportDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  >
+                    Download current export
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setAllReadingsExpanded(!allReadingsExpanded)}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
+            >
+              {allReadingsExpanded ? 'Collapse' : 'Expand'}
+            </button>
+          </div>
         </div>
         {allReadingsExpanded && (
           <div className="overflow-x-auto">

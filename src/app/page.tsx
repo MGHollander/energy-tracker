@@ -59,7 +59,7 @@ export default function Home() {
 
   if (authLoading) {
     return (
-      <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
+      <main className="min-h-screen p-8">
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-gray-600 dark:text-gray-400">
             Loading...
