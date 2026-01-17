@@ -19,8 +19,6 @@ function Navigation() {
         }
     }, [houses]);
 
-    console.log("Navigation component rendered - validating client-side execution");
-
     return (
         <header className="bg-white dark:bg-gray-800 shadow">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
