@@ -10,6 +10,7 @@ interface EnergyInputFormProps {
   editingReading: EnergyReading | null;
   onUpdateReading: (reading: EnergyReading) => Promise<void>;
   onCancelEdit: () => void;
+  houseId: string;
 }
 
 const months = [
@@ -23,6 +24,7 @@ export default function EnergyInputForm({
   editingReading,
   onUpdateReading,
   onCancelEdit,
+  houseId,
 }: EnergyInputFormProps) {
   const [date, setDate] = useState("");
   const [electricityDay, setElectricityDay] = useState("");
@@ -86,6 +88,7 @@ export default function EnergyInputForm({
         electricityDay: Number(electricityDay),
         electricityNight: Number(electricityNight),
         gas: Number(gas),
+        house_id: houseId,
       };
 
       if (editingReading) {

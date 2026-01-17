@@ -7,6 +7,7 @@ import { addEnergyReading } from '../actions/addEnergyReading';
 type EnergyReadingRow = {
   id: string;
   user_id: string;
+  house_id: string;
   date: string;
   electricity_day: number;
   electricity_night: number;
@@ -22,13 +23,14 @@ const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   electricityNight: row.electricity_night,
   gas: row.gas,
   user_id: row.user_id,
+  house_id: row.house_id,
   created_at: row.created_at,
   updated_at: row.updated_at,
 });
 
-type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas'>>;
+type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas' | 'house_id'>>;
 
-export function useEnergyReadings() {
+export function useEnergyReadings(houseId?: string) {
   const { user } = useAuth();
   const [readings, setReadings] = useState<EnergyReading[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +63,16 @@ export function useEnergyReadings() {
 
     const fetchReadings = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('energy_readings')
         .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: true });
+        .eq('user_id', user.id);
+      
+      if (houseId) {
+        query = query.eq('house_id', houseId);
+      }
+      
+      const { data, error } = await query.order('date', { ascending: true });
 
       if (error) {
         setError(error.message);
@@ -96,6 +103,15 @@ export function useEnergyReadings() {
           if (payload.old && payload.eventType === 'DELETE' && (payload.old as EnergyReadingRow).user_id !== user.id) {
             return;
           }
+          // Filter by house_id if specified
+          if (houseId) {
+            if (payload.new && (payload.new as EnergyReadingRow).house_id !== houseId) {
+              return;
+            }
+            if (payload.old && payload.eventType === 'DELETE' && (payload.old as EnergyReadingRow).house_id !== houseId) {
+              return;
+            }
+          }
           if (payload.eventType === 'INSERT') {
             setReadings(prev => [...prev, transformRowToReading(payload.new as EnergyReadingRow)].sort((a, b) => a.date.localeCompare(b.date)));
           } else if (payload.eventType === 'UPDATE') {
@@ -110,7 +126,7 @@ export function useEnergyReadings() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, houseId]);
 
   return { readings, loading, error, deleteReading, deleteLoading, deleteError };
 }

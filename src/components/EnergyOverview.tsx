@@ -8,9 +8,10 @@ interface EnergyOverviewProps {
   readings: EnergyReading[];
   onEdit: (reading: EnergyReading) => void;
   onDelete: (id: string) => void;
+  houseId?: string;
 }
 
-export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOverviewProps) {
+export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: EnergyOverviewProps) {
   // Sort readings by date ascending
   const sortedReadings = [...readings].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -95,7 +96,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
   const handleExportOverwrite = () => {
     startTransition(async () => {
       try {
-        await exportAllReadingsOverwrite();
+        await exportAllReadingsOverwrite(houseId);
         alert('Export overwritten successfully');
       } catch (error) {
         const err = error as Error;
@@ -267,7 +268,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
                   </button>
                   <button
                     onClick={() => {
-                      window.open('/api/export/all', '_blank')
+                      window.open(`/api/export/all${houseId ? `?houseId=${houseId}` : ''}`, '_blank')
                       setExportDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
@@ -276,7 +277,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete }: EnergyOve
                   </button>
                   <button
                     onClick={() => {
-                      window.open('/api/export/current', '_blank')
+                      window.open(`/api/export/current${houseId ? `?houseId=${houseId}` : ''}`, '_blank')
                       setExportDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"

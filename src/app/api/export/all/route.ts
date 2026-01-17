@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export async function GET() {
+export async function GET(request: Request) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,19 +25,27 @@ export async function GET() {
     return new Response('Not authenticated', { status: 401 })
   }
 
-  const { data: readings, error } = await supabase
+  const url = new URL(request.url)
+  const houseId = url.searchParams.get('houseId')
+
+  let query = supabase
     .from('energy_readings')
     .select('*')
     .eq('user_id', user.id)
-    .order('date', { ascending: true })
+  
+  if (houseId) {
+    query = query.eq('house_id', houseId)
+  }
+  
+  const { data: readings, error } = await query.order('date', { ascending: true })
 
   if (error) {
     return new Response('Error fetching readings', { status: 500 })
   }
 
-  const header = 'id,date,electricity_day,electricity_night,gas,user_id,created_at,updated_at\n'
+  const header = 'id,date,electricity_day,electricity_night,gas,user_id,house_id,created_at,updated_at\n'
   const rows = readings.map(reading =>
-    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.user_id},${reading.created_at},${reading.updated_at}\n`
+    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
   ).join('')
 
   const csvContent = header + rows

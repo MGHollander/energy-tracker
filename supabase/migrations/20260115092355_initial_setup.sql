@@ -35,3 +35,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER set_updated_at_energy_readings
     BEFORE UPDATE ON energy_readings
     FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
+
+-- Enable realtime for energy_readings table
+ALTER PUBLICATION supabase_realtime ADD TABLE energy_readings;
