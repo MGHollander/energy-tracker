@@ -19,7 +19,7 @@ This application helps users monitor their energy consumption over time. It prov
    - Gas (m³)
 3. **Monthly Overview**: See consumption breakdown for each month
 4. **Yearly Overview**: View annual totals with comparisons
-5. **Data Persistence**: All data is stored locally in the browser
+5. **Data Persistence**: All data is stored in Supabase with user authentication
 
 ## Tech Stack
 
@@ -27,7 +27,7 @@ This application helps users monitor their energy consumption over time. It prov
 - **React**: 19.1.0
 - **Styling**: Tailwind CSS v4
 - **TypeScript**: Fully typed
-- **Storage**: localStorage for persistence
+- **Storage**: Supabase for persistence and authentication
 
 ## Project Structure
 
@@ -67,6 +67,5 @@ src/
 
 ## Important Notes
 
-- Data is stored in localStorage and will persist across browser sessions
-- Clearing browser data will reset all readings
+- Data is stored in Supabase and persists across sessions for authenticated users
 - The application uses cumulative readings (not delta/usage per period)
