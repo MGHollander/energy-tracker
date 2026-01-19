@@ -38,7 +38,7 @@ export default function EnergyInputForm({
     if (editingReading) {
       setDate(editingReading.date);
       setElectricityHigh(editingReading.electricityHigh.toString());
-      setElectricityLow(editingReading.electricityLow.toString());
+      setElectricityLow(editingReading.electricityLow?.toString() || "");
       setGas(editingReading.gas.toString());
       setWater(editingReading.water?.toString() || "");
     } else {
@@ -65,8 +65,8 @@ export default function EnergyInputForm({
       newErrors.electricityHigh = "Valid electricity high reading is required";
     }
 
-    if (!electricityLow || isNaN(Number(electricityLow)) || Number(electricityLow) < 0) {
-      newErrors.electricityLow = "Valid electricity low reading is required";
+    if (electricityLow && (isNaN(Number(electricityLow)) || Number(electricityLow) < 0)) {
+      newErrors.electricityLow = "Electricity low reading must be a non-negative number";
     }
 
     if (!gas || isNaN(Number(gas)) || Number(gas) < 0) {
@@ -93,7 +93,7 @@ export default function EnergyInputForm({
       const reading: EnergyReadingInput = {
         date,
         electricityHigh: Number(electricityHigh),
-        electricityLow: Number(electricityLow),
+        electricityLow: electricityLow ? Number(electricityLow) : null,
         gas: Number(gas),
         water: water ? Number(water) : null,
         house_id: houseId,
@@ -165,7 +165,7 @@ export default function EnergyInputForm({
 
         <div>
           <label htmlFor="electricityLow" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
-            Electricity Low (kWh)
+            Electricity Low (kWh) - Optional
           </label>
           <input
             type="number"
@@ -174,9 +174,8 @@ export default function EnergyInputForm({
             onChange={(e) => setElectricityLow(e.target.value)}
             step="1"
             min="0"
-            placeholder={lastReading ? lastReading.electricityLow.toString() : "0"}
+            placeholder={lastReading?.electricityLow?.toString() || "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
           />
           {errors.electricityLow && <p className="text-red-500 text-sm mt-1">{errors.electricityLow}</p>}
         </div>
