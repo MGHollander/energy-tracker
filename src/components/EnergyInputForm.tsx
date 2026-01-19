@@ -30,6 +30,7 @@ export default function EnergyInputForm({
   const [electricityDay, setElectricityDay] = useState("");
   const [electricityNight, setElectricityNight] = useState("");
   const [gas, setGas] = useState("");
+  const [water, setWater] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,6 +40,7 @@ export default function EnergyInputForm({
       setElectricityDay(editingReading.electricityDay.toString());
       setElectricityNight(editingReading.electricityNight.toString());
       setGas(editingReading.gas.toString());
+      setWater(editingReading.water?.toString() || "");
     } else {
       // Set default date to today
       const now = new Date();
@@ -48,6 +50,7 @@ export default function EnergyInputForm({
       setElectricityDay("");
       setElectricityNight("");
       setGas("");
+      setWater("");
     }
   }, [editingReading, lastReading]);
 
@@ -70,6 +73,10 @@ export default function EnergyInputForm({
       newErrors.gas = "Valid gas reading is required";
     }
 
+    if (water && (isNaN(Number(water)) || Number(water) < 0)) {
+      newErrors.water = "Water reading must be a non-negative number";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -88,6 +95,7 @@ export default function EnergyInputForm({
         electricityDay: Number(electricityDay),
         electricityNight: Number(electricityNight),
         gas: Number(gas),
+        water: water ? Number(water) : null,
         house_id: houseId,
       };
 
@@ -101,6 +109,7 @@ export default function EnergyInputForm({
       setElectricityDay("");
       setElectricityNight("");
       setGas("");
+      setWater("");
     } finally {
       setIsSubmitting(false);
     }
@@ -190,6 +199,23 @@ export default function EnergyInputForm({
             required
           />
           {errors.gas && <p className="text-red-500 text-sm mt-1">{errors.gas}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="water" className="block text-sm font-medium text-cyan-700 dark:text-cyan-400 mb-1">
+            Water (m³)
+          </label>
+          <input
+            type="number"
+            id="water"
+            value={water}
+            onChange={(e) => setWater(e.target.value)}
+            step="1"
+            min="0"
+            placeholder={lastReading?.water?.toString() || "0"}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          {errors.water && <p className="text-red-500 text-sm mt-1">{errors.water}</p>}
         </div>
 
         <div className="flex gap-3 pt-2">

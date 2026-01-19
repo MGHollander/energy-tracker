@@ -17,7 +17,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
 
   // Calculate monthly deltas
   const monthlySummaries: MonthlySummary[] = [];
-  
+
   for (let i = 1; i < sortedReadings.length; i++) {
     const current = sortedReadings[i];
     const previous = sortedReadings[i - 1];
@@ -34,6 +34,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
         electricityNight: current.electricityNight - previous.electricityNight,
         electricityTotal: (current.electricityDay - previous.electricityDay) + (current.electricityNight - previous.electricityNight),
         gas: current.gas - previous.gas,
+        water: (current.water ?? 0) - (previous.water ?? 0),
       });
     }
   }
@@ -47,10 +48,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
   for (let i = 0; i < years.length; i++) {
     const year = years[i];
     const readingsInYear = sortedReadings.filter(r => r.date.startsWith(year));
-    
+
     if (readingsInYear.length > 0) {
       const firstReadingOfYear = readingsInYear[0];
-      
+
       // Find first reading of next year or use last reading of current year
       let endReading: EnergyReading;
       if (i + 1 < years.length) {
@@ -72,6 +73,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
         electricityNight: endReading.electricityNight - firstReadingOfYear.electricityNight,
         electricityTotal: (endReading.electricityDay - firstReadingOfYear.electricityDay) + (endReading.electricityNight - firstReadingOfYear.electricityNight),
         gas: endReading.gas - firstReadingOfYear.gas,
+        water: (endReading.water ?? 0) - (firstReadingOfYear.water ?? 0),
         monthlyBreakdown,
       });
     }
@@ -139,7 +141,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
           </div>
           {yearlyExpanded[index] && (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
                     Electricity Day
@@ -176,6 +178,15 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
                 </div>
+                <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4">
+                  <p className="text-sm text-cyan-700 dark:text-cyan-400 font-medium">
+                    Water
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {yearly.water?.toFixed(2) ?? "N/A"}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
+                </div>
               </div>
 
               {/* Monthly Breakdown */}
@@ -202,6 +213,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                         <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                           Gas (m³)
                         </th>
+                        <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
+                          Water (m³)
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -224,6 +238,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                             {monthly.gas.toFixed(2)}
+                          </td>
+                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                            {monthly.water.toFixed(2)}
                           </td>
                         </tr>
                       ))}
@@ -312,6 +329,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                   <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                     Gas (m³)
                   </th>
+                  <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
+                    Water (m³)
+                  </th>
                   <th className="text-center py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
                     Actions
                   </th>
@@ -340,6 +360,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                         {reading.gas.toFixed(2)}
+                      </td>
+                      <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                        {reading.water?.toFixed(2) ?? "N/A"}
                       </td>
                       <td className="py-2 px-2 text-center">
                         <button

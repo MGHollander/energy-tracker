@@ -12,6 +12,7 @@ type EnergyReadingRow = {
   electricity_day: number;
   electricity_night: number;
   gas: number;
+  water: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -22,13 +23,16 @@ const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   electricityDay: row.electricity_day,
   electricityNight: row.electricity_night,
   gas: row.gas,
+  water: row.water,
   user_id: row.user_id,
   house_id: row.house_id,
   created_at: row.created_at,
   updated_at: row.updated_at,
 });
 
-type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas' | 'house_id'>>;
+type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas' | 'house_id'>> & {
+  water?: number | null;
+};
 
 export function useEnergyReadings(houseId?: string) {
   const { user } = useAuth();
@@ -166,6 +170,7 @@ export function useUpdateEnergyReading() {
     if (reading.electricityDay !== undefined) updateData.electricity_day = reading.electricityDay;
     if (reading.electricityNight !== undefined) updateData.electricity_night = reading.electricityNight;
     if (reading.gas !== undefined) updateData.gas = reading.gas;
+    if (reading.water !== undefined) updateData.water = reading.water;
 
     const { data, error } = await supabase
       .from('energy_readings')

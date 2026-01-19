@@ -13,6 +13,7 @@ export interface EnergyReading {
   electricityDay: number; // Electricity usage during daylight (kWh)
   electricityNight: number; // Electricity usage at night (kWh)
   gas: number; // Gas usage (m³ or kWh depending on region)
+  water: number | null; // Water usage (m³)
   user_id: string; // User ID from Supabase
   house_id: string;
   created_at: string; // Created timestamp
@@ -27,6 +28,7 @@ export interface MonthlySummary {
   electricityNight: number;
   electricityTotal: number;
   gas: number;
+  water: number;
 }
 
 export interface YearlySummary {
@@ -35,5 +37,6 @@ export interface YearlySummary {
   electricityNight: number;
   electricityTotal: number;
   gas: number;
+  water: number;
   monthlyBreakdown: MonthlySummary[];
 }

@@ -41,9 +41,9 @@ export async function exportAllReadingsOverwrite(houseId?: string) {
   if (error) throw error
 
   const csvPath = path.join(process.cwd(), 'export', 'energy_reading.csv')
-  const header = 'id,date,electricity_day,electricity_night,gas,user_id,house_id,created_at,updated_at\n'
+  const header = 'id,date,electricity_day,electricity_night,gas,water,user_id,house_id,created_at,updated_at\n'
   const rows = readings.map(reading =>
-    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
+    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.water},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
   ).join('')
 
   fs.writeFileSync(csvPath, header + rows)
@@ -94,9 +94,9 @@ export async function exportAllReadingsDownload(houseId?: string) {
   }
   console.log('Fetched readings:', readings.length)
 
-  const header = 'id,date,electricity_day,electricity_night,gas,user_id,house_id,created_at,updated_at\n'
+  const header = 'id,date,electricity_day,electricity_night,gas,water,user_id,house_id,created_at,updated_at\n'
   const rows = readings.map(reading =>
-    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
+    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.water},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
   ).join('')
 
   const csvContent = header + rows
