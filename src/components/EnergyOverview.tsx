@@ -21,9 +21,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
   for (let i = 1; i < sortedReadings.length; i++) {
     const current = sortedReadings[i];
     const previous = sortedReadings[i - 1];
-    // The usage belongs to the month of the current reading
-    // (e.g., reading on March 1st = February's usage, so it's logged in March)
-    const month = current.date.substring(0, 7); // YYYY-MM
+    // The usage belongs to the month of the previous reading
+    // (e.g., usage between Feb 28 and March 1st = February's usage)
+    const month = previous.date.substring(0, 7); // YYYY-MM
 
     // Only include if this is the first delta for a given month
     const existingMonth = monthlySummaries.find(m => m.month === month);
@@ -147,7 +147,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Electricity High
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityHigh.toFixed(2)}
+                    {yearly.electricityHigh.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -156,7 +156,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Electricity Low
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityLow.toFixed(2)}
+                    {yearly.electricityLow.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -165,7 +165,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Total Electricity
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityTotal.toFixed(2)}
+                    {yearly.electricityTotal.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -174,7 +174,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Gas
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.gas.toFixed(2)}
+                    {yearly.gas.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
                 </div>
@@ -183,7 +183,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Water
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.water?.toFixed(2) ?? "N/A"}
+                    {yearly.water?.toFixed(0) ?? "N/A"}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
                 </div>
@@ -228,19 +228,19 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                             {formatMonth(monthly.month)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityHigh.toFixed(2)}
+                            {monthly.electricityHigh.toFixed(0)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityLow.toFixed(2)}
+                            {monthly.electricityLow.toFixed(0)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityTotal.toFixed(2)}
+                            {monthly.electricityTotal.toFixed(0)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.gas.toFixed(2)}
+                            {monthly.gas.toFixed(0)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.water.toFixed(2)}
+                            {monthly.water.toFixed(0)}
                           </td>
                         </tr>
                       ))}
@@ -353,16 +353,16 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                         })}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityHigh.toFixed(2)}
+                        {reading.electricityHigh.toFixed(0)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityLow.toFixed(2)}
+                        {reading.electricityLow.toFixed(0)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.gas.toFixed(2)}
+                        {reading.gas.toFixed(0)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.water?.toFixed(2) ?? "N/A"}
+                        {reading.water?.toFixed(0) ?? "N/A"}
                       </td>
                       <td className="py-2 px-2 text-center">
                         <button
