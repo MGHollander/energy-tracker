@@ -28,7 +28,7 @@ function Navigation() {
                             Energy Tracker
                         </Link>
                         {user && (
-                            <div className="ml-10 flex items-baseline space-x-4">
+                            <div className="ml-10 flex items-center space-x-4">
                                 <Link href="/" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                                     Dashboard
                                 </Link>
