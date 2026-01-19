@@ -9,8 +9,8 @@ type EnergyReadingRow = {
   user_id: string;
   house_id: string;
   date: string;
-  electricity_day: number;
-  electricity_night: number;
+  electricity_high: number;
+  electricity_low: number;
   gas: number;
   water: number | null;
   created_at: string;
@@ -20,8 +20,8 @@ type EnergyReadingRow = {
 const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   id: row.id,
   date: row.date,
-  electricityDay: row.electricity_day,
-  electricityNight: row.electricity_night,
+  electricityHigh: row.electricity_high,
+  electricityLow: row.electricity_low,
   gas: row.gas,
   water: row.water,
   user_id: row.user_id,
@@ -30,7 +30,7 @@ const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   updated_at: row.updated_at,
 });
 
-type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_day' | 'electricity_night' | 'gas' | 'house_id'>> & {
+type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_high' | 'electricity_low' | 'gas' | 'house_id'>> & {
   water?: number | null;
 };
 
@@ -167,8 +167,8 @@ export function useUpdateEnergyReading() {
     setError(null);
     const updateData: PartialEnergyReadingRow = {};
     if (reading.date) updateData.date = reading.date;
-    if (reading.electricityDay !== undefined) updateData.electricity_day = reading.electricityDay;
-    if (reading.electricityNight !== undefined) updateData.electricity_night = reading.electricityNight;
+    if (reading.electricityHigh !== undefined) updateData.electricity_high = reading.electricityHigh;
+    if (reading.electricityLow !== undefined) updateData.electricity_low = reading.electricityLow;
     if (reading.gas !== undefined) updateData.gas = reading.gas;
     if (reading.water !== undefined) updateData.water = reading.water;
 

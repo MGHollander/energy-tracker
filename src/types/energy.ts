@@ -10,8 +10,8 @@ export interface House {
 export interface EnergyReading {
   id: string;
   date: string; // ISO date string (YYYY-MM-DD)
-  electricityDay: number; // Electricity usage during daylight (kWh)
-  electricityNight: number; // Electricity usage at night (kWh)
+  electricityHigh: number; // Electricity usage during high tariff (kWh)
+  electricityLow: number; // Electricity usage during low tariff (kWh)
   gas: number; // Gas usage (m³ or kWh depending on region)
   water: number | null; // Water usage (m³)
   user_id: string; // User ID from Supabase
@@ -24,8 +24,8 @@ export type EnergyReadingInput = Omit<EnergyReading, 'id' | 'user_id' | 'created
 
 export interface MonthlySummary {
   month: string; // YYYY-MM
-  electricityDay: number;
-  electricityNight: number;
+  electricityHigh: number;
+  electricityLow: number;
   electricityTotal: number;
   gas: number;
   water: number;
@@ -33,8 +33,8 @@ export interface MonthlySummary {
 
 export interface YearlySummary {
   year: string;
-  electricityDay: number;
-  electricityNight: number;
+  electricityHigh: number;
+  electricityLow: number;
   electricityTotal: number;
   gas: number;
   water: number;

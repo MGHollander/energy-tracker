@@ -30,9 +30,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
     if (!existingMonth) {
       monthlySummaries.push({
         month,
-        electricityDay: current.electricityDay - previous.electricityDay,
-        electricityNight: current.electricityNight - previous.electricityNight,
-        electricityTotal: (current.electricityDay - previous.electricityDay) + (current.electricityNight - previous.electricityNight),
+        electricityHigh: current.electricityHigh - previous.electricityHigh,
+        electricityLow: current.electricityLow - previous.electricityLow,
+        electricityTotal: (current.electricityHigh - previous.electricityHigh) + (current.electricityLow - previous.electricityLow),
         gas: current.gas - previous.gas,
         water: (current.water ?? 0) - (previous.water ?? 0),
       });
@@ -69,9 +69,9 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
 
       yearlySummaries.push({
         year,
-        electricityDay: endReading.electricityDay - firstReadingOfYear.electricityDay,
-        electricityNight: endReading.electricityNight - firstReadingOfYear.electricityNight,
-        electricityTotal: (endReading.electricityDay - firstReadingOfYear.electricityDay) + (endReading.electricityNight - firstReadingOfYear.electricityNight),
+        electricityHigh: endReading.electricityHigh - firstReadingOfYear.electricityHigh,
+        electricityLow: endReading.electricityLow - firstReadingOfYear.electricityLow,
+        electricityTotal: (endReading.electricityHigh - firstReadingOfYear.electricityHigh) + (endReading.electricityLow - firstReadingOfYear.electricityLow),
         gas: endReading.gas - firstReadingOfYear.gas,
         water: (endReading.water ?? 0) - (firstReadingOfYear.water ?? 0),
         monthlyBreakdown,
@@ -144,19 +144,19 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
-                    Electricity Day
+                    Electricity High
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityDay.toFixed(2)}
+                    {yearly.electricityHigh.toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                   <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
-                    Electricity Night
+                    Electricity Low
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityNight.toFixed(2)}
+                    {yearly.electricityLow.toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -202,10 +202,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                           Month
                         </th>
                         <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
-                          Day (kWh)
+                          High (kWh)
                         </th>
                         <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
-                          Night (kWh)
+                          Low (kWh)
                         </th>
                         <th className="text-right py-2 px-2 font-medium text-purple-700 dark:text-purple-400">
                           Total (kWh)
@@ -228,10 +228,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                             {formatMonth(monthly.month)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityDay.toFixed(2)}
+                            {monthly.electricityHigh.toFixed(2)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityNight.toFixed(2)}
+                            {monthly.electricityLow.toFixed(2)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                             {monthly.electricityTotal.toFixed(2)}
@@ -321,10 +321,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Date
                   </th>
                   <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
-                    Day (kWh)
+                    High (kWh)
                   </th>
                   <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
-                    Night (kWh)
+                    Low (kWh)
                   </th>
                   <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                     Gas (m³)
@@ -353,10 +353,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                         })}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityDay.toFixed(2)}
+                        {reading.electricityHigh.toFixed(2)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityNight.toFixed(2)}
+                        {reading.electricityLow.toFixed(2)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                         {reading.gas.toFixed(2)}

@@ -43,9 +43,9 @@ export async function GET(request: Request) {
     return new Response('Error fetching readings', { status: 500 })
   }
 
-  const header = 'id,date,electricity_day,electricity_night,gas,user_id,house_id,created_at,updated_at\n'
+  const header = 'id,date,electricity_high,electricity_low,gas,user_id,house_id,created_at,updated_at\n'
   const rows = readings.map(reading =>
-    `${reading.id},${reading.date},${reading.electricity_day},${reading.electricity_night},${reading.gas},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
+    `${reading.id},${reading.date},${reading.electricity_high},${reading.electricity_low},${reading.gas},${reading.user_id},${reading.house_id},${reading.created_at},${reading.updated_at}\n`
   ).join('')
 
   const csvContent = header + rows

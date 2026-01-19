@@ -33,8 +33,8 @@ export async function addEnergyReading(reading: EnergyReadingInput) {
     .insert({
       user_id: user.id,
       date: reading.date,
-      electricity_day: reading.electricityDay,
-      electricity_night: reading.electricityNight,
+      electricity_high: reading.electricityHigh,
+      electricity_low: reading.electricityLow,
       gas: reading.gas,
       water: reading.water,
       house_id: reading.house_id,
@@ -46,10 +46,10 @@ export async function addEnergyReading(reading: EnergyReadingInput) {
 
   // Append to CSV
   const csvPath = path.join(process.cwd(), 'export', 'energy_reading.csv')
-  const row = `${data.id},${data.date},${data.electricity_day},${data.electricity_night},${data.gas},${data.water},${data.house_id},${data.user_id},${data.created_at},${data.updated_at}\n`
+  const row = `${data.id},${data.date},${data.electricity_high},${data.electricity_low},${data.gas},${data.water},${data.house_id},${data.user_id},${data.created_at},${data.updated_at}\n`
 
   if (!fs.existsSync(csvPath)) {
-    const header = 'id,date,electricity_day,electricity_night,gas,water,house_id,user_id,created_at,updated_at\n'
+    const header = 'id,date,electricity_high,electricity_low,gas,water,house_id,user_id,created_at,updated_at\n'
     fs.writeFileSync(csvPath, header)
   }
 

@@ -27,8 +27,8 @@ export default function EnergyInputForm({
   houseId,
 }: EnergyInputFormProps) {
   const [date, setDate] = useState("");
-  const [electricityDay, setElectricityDay] = useState("");
-  const [electricityNight, setElectricityNight] = useState("");
+  const [electricityHigh, setElectricityHigh] = useState("");
+  const [electricityLow, setElectricityLow] = useState("");
   const [gas, setGas] = useState("");
   const [water, setWater] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -37,8 +37,8 @@ export default function EnergyInputForm({
   useEffect(() => {
     if (editingReading) {
       setDate(editingReading.date);
-      setElectricityDay(editingReading.electricityDay.toString());
-      setElectricityNight(editingReading.electricityNight.toString());
+      setElectricityHigh(editingReading.electricityHigh.toString());
+      setElectricityLow(editingReading.electricityLow.toString());
       setGas(editingReading.gas.toString());
       setWater(editingReading.water?.toString() || "");
     } else {
@@ -47,8 +47,8 @@ export default function EnergyInputForm({
       setDate(now.toISOString().split('T')[0]);
 
       // Always start with empty fields
-      setElectricityDay("");
-      setElectricityNight("");
+      setElectricityHigh("");
+      setElectricityLow("");
       setGas("");
       setWater("");
     }
@@ -61,12 +61,12 @@ export default function EnergyInputForm({
       newErrors.date = "Date is required";
     }
 
-    if (!electricityDay || isNaN(Number(electricityDay)) || Number(electricityDay) < 0) {
-      newErrors.electricityDay = "Valid electricity day reading is required";
+    if (!electricityHigh || isNaN(Number(electricityHigh)) || Number(electricityHigh) < 0) {
+      newErrors.electricityHigh = "Valid electricity high reading is required";
     }
 
-    if (!electricityNight || isNaN(Number(electricityNight)) || Number(electricityNight) < 0) {
-      newErrors.electricityNight = "Valid electricity night reading is required";
+    if (!electricityLow || isNaN(Number(electricityLow)) || Number(electricityLow) < 0) {
+      newErrors.electricityLow = "Valid electricity low reading is required";
     }
 
     if (!gas || isNaN(Number(gas)) || Number(gas) < 0) {
@@ -92,8 +92,8 @@ export default function EnergyInputForm({
     try {
       const reading: EnergyReadingInput = {
         date,
-        electricityDay: Number(electricityDay),
-        electricityNight: Number(electricityNight),
+        electricityHigh: Number(electricityHigh),
+        electricityLow: Number(electricityLow),
         gas: Number(gas),
         water: water ? Number(water) : null,
         house_id: houseId,
@@ -106,10 +106,8 @@ export default function EnergyInputForm({
       }
 
       // Reset form with new default values
-      setElectricityDay("");
-      setElectricityNight("");
-      setGas("");
-      setWater("");
+      setElectricityHigh("");
+      setElectricityLow("");
     } finally {
       setIsSubmitting(false);
     }
@@ -148,39 +146,39 @@ export default function EnergyInputForm({
         </div>
 
         <div>
-          <label htmlFor="electricityDay" className="block text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
-            Electricity Day (kWh)
+          <label htmlFor="electricityHigh" className="block text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
+            Electricity High (kWh)
           </label>
           <input
             type="number"
-            id="electricityDay"
-            value={electricityDay}
-            onChange={(e) => setElectricityDay(e.target.value)}
+            id="electricityHigh"
+            value={electricityHigh}
+            onChange={(e) => setElectricityHigh(e.target.value)}
             step="1"
             min="0"
-            placeholder={lastReading ? lastReading.electricityDay.toString() : "0"}
+            placeholder={lastReading ? lastReading.electricityHigh.toString() : "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
-          {errors.electricityDay && <p className="text-red-500 text-sm mt-1">{errors.electricityDay}</p>}
+          {errors.electricityHigh && <p className="text-red-500 text-sm mt-1">{errors.electricityHigh}</p>}
         </div>
 
         <div>
-          <label htmlFor="electricityNight" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
-            Electricity Night (kWh)
+          <label htmlFor="electricityLow" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+            Electricity Low (kWh)
           </label>
           <input
             type="number"
-            id="electricityNight"
-            value={electricityNight}
-            onChange={(e) => setElectricityNight(e.target.value)}
+            id="electricityLow"
+            value={electricityLow}
+            onChange={(e) => setElectricityLow(e.target.value)}
             step="1"
             min="0"
-            placeholder={lastReading ? lastReading.electricityNight.toString() : "0"}
+            placeholder={lastReading ? lastReading.electricityLow.toString() : "0"}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
-          {errors.electricityNight && <p className="text-red-500 text-sm mt-1">{errors.electricityNight}</p>}
+          {errors.electricityLow && <p className="text-red-500 text-sm mt-1">{errors.electricityLow}</p>}
         </div>
 
         <div>
