@@ -35,8 +35,9 @@ yarn-error.log*
 .env*
 
 # supabase
-/supabase
-!/supabase/migrations/*.sql
+/supabase/.branches
+/supabase/.temp
+!*.sql
 
 # typescript
 *.tsbuildinfo
