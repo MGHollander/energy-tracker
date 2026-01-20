@@ -3,21 +3,35 @@
 import { useAuth } from "@/lib/auth-context";
 import { useHouses } from "@/hooks/useHouses";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 function Navigation() {
     const { user, signOut } = useAuth();
     const { houses } = useHouses();
     const router = useRouter();
+    const pathname = usePathname();
     const [selectedHouse, setSelectedHouse] = useState<string>('');
 
     useEffect(() => {
         if (houses.length > 0) {
-            const defaultHouse = houses.find(h => h.is_default);
-            setSelectedHouse(defaultHouse?.id || houses[0]?.id || '');
+            let houseId = '';
+            if (pathname.startsWith('/houses/')) {
+                const pathParts = pathname.split('/');
+                if (pathParts.length >= 3) {
+                    const id = pathParts[2];
+                    if (houses.some(h => h.id === id)) {
+                        houseId = id;
+                    }
+                }
+            }
+            if (!houseId) {
+                const defaultHouse = houses.find(h => h.is_default);
+                houseId = defaultHouse?.id || houses[0]?.id || '';
+            }
+            setSelectedHouse(houseId);
         }
-    }, [houses]);
+    }, [houses, pathname]);
 
     return (
         <header className="bg-white dark:bg-gray-800 shadow">
