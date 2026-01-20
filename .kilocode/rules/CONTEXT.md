@@ -5,13 +5,13 @@ A Next.js application for tracking yearly electricity, gas, and water usage acro
 ## Purpose
 
 This application helps users monitor their energy consumption over time. It provides features to:
+
 - Log electricity usage (separated into high and low tariffs)
 - Log gas usage
 - Log water usage
 - Manage multiple houses/properties
 - Set starting meter readings for initial setup
 - View monthly and yearly consumption summaries per house
-- View overall statistics across all houses
 
 ## Key Features
 
@@ -24,8 +24,7 @@ This application helps users monitor their energy consumption over time. It prov
    - Water (m³) - optional
 4. **Monthly Overview**: See consumption breakdown for each month
 5. **Yearly Overview**: View annual totals with comparisons
-6. **Overall Statistics**: View aggregated usage statistics across all houses
-7. **Data Persistence**: All data is stored in Supabase with user authentication
+6. **Data Persistence**: All data is stored in Supabase with user authentication
 
 ## Tech Stack
 
@@ -37,7 +36,7 @@ This application helps users monitor their energy consumption over time. It prov
 
 ## Project Structure
 
-```
+```text
 src/
 ├── app/
 │   ├── globals.css      # Global styles with Tailwind
@@ -48,8 +47,6 @@ src/
 │   │       ├── page.tsx         # House-specific energy tracking
 │   │       └── statistics/
 │   │           └── page.tsx     # House-specific statistics
-│   └── statistics/
-│       └── page.tsx     # Overall statistics across all houses
 ├── components/
 │   ├── EnergyInputForm.tsx      # Form for logging readings
 │   ├── EnergyOverview.tsx       # Monthly/yearly summaries
@@ -74,11 +71,11 @@ src/
 3. **Log Usage**: Fill out the form with the current date and meter values
 4. **View Overview**: Scroll down to see monthly breakdowns and yearly summaries
 5. **View House Statistics**: Use the house selector in the navigation and click "Statistics" to view statistics for a specific house
-6. **View Overall Statistics**: Navigate to the Statistics page to see overall usage across all houses
 
 ## Data Model
 
 ### House
+
 - `id`: Unique identifier
 - `user_id`: User ID from Supabase
 - `name`: House name/description
@@ -87,6 +84,7 @@ src/
 - `updated_at`: Last update timestamp
 
 ### Energy Reading
+
 - `id`: Unique identifier
 - `date`: ISO date string (YYYY-MM-DD)
 - `electricityHigh`: Electricity usage during high tariff (kWh)
