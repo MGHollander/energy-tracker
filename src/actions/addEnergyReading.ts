@@ -34,7 +34,7 @@ export async function addEnergyReading(reading: EnergyReadingInput) {
       user_id: user.id,
       date: reading.date,
       electricity_high: reading.electricityHigh,
-      electricity_low: reading.electricityLow,
+      electricity_low: reading.electricityLow ?? null,
       gas: reading.gas,
       water: reading.water,
       house_id: reading.house_id,

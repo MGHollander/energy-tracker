@@ -31,8 +31,8 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
       monthlySummaries.push({
         month,
         electricityHigh: current.electricityHigh - previous.electricityHigh,
-        electricityLow: current.electricityLow - previous.electricityLow,
-        electricityTotal: (current.electricityHigh - previous.electricityHigh) + (current.electricityLow - previous.electricityLow),
+        electricityLow: (current.electricityLow ?? 0) - (previous.electricityLow ?? 0),
+        electricityTotal: (current.electricityHigh - previous.electricityHigh) + ((current.electricityLow ?? 0) - (previous.electricityLow ?? 0)),
         gas: current.gas - previous.gas,
         water: (current.water ?? 0) - (previous.water ?? 0),
       });
@@ -70,8 +70,8 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
       yearlySummaries.push({
         year,
         electricityHigh: endReading.electricityHigh - firstReadingOfYear.electricityHigh,
-        electricityLow: endReading.electricityLow - firstReadingOfYear.electricityLow,
-        electricityTotal: (endReading.electricityHigh - firstReadingOfYear.electricityHigh) + (endReading.electricityLow - firstReadingOfYear.electricityLow),
+        electricityLow: (endReading.electricityLow ?? 0) - (firstReadingOfYear.electricityLow ?? 0),
+        electricityTotal: (endReading.electricityHigh - firstReadingOfYear.electricityHigh) + ((endReading.electricityLow ?? 0) - (firstReadingOfYear.electricityLow ?? 0)),
         gas: endReading.gas - firstReadingOfYear.gas,
         water: (endReading.water ?? 0) - (firstReadingOfYear.water ?? 0),
         monthlyBreakdown,
@@ -156,7 +156,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     Electricity Low
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityLow.toFixed(0)}
+                    {yearly.electricityLow !== null ? yearly.electricityLow.toFixed(0) : '-'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -231,7 +231,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                             {monthly.electricityHigh.toFixed(0)}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityLow.toFixed(0)}
+                            {monthly.electricityLow !== null ? monthly.electricityLow.toFixed(0) : '-'}
                           </td>
                           <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                             {monthly.electricityTotal.toFixed(0)}
@@ -356,7 +356,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                         {reading.electricityHigh.toFixed(0)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityLow.toFixed(0)}
+                        {reading.electricityLow !== null ? reading.electricityLow.toFixed(0) : '-'}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                         {reading.gas.toFixed(0)}
