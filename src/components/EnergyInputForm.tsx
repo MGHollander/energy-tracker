@@ -120,16 +120,16 @@ export default function EnergyInputForm({
   };
 
   return (
-    <div id="energy-form" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+    <div id="energy-form" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
         {editingReading ? "Edit Reading" : "Add New Reading"}
       </h2>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
         Enter the meter readings as shown on your meters. Usage will be calculated automatically.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Date
@@ -145,74 +145,78 @@ export default function EnergyInputForm({
           {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
         </div>
 
-        <div>
-          <label htmlFor="electricityHigh" className="block text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
-            Electricity High (kWh)
-          </label>
-          <input
-            type="number"
-            id="electricityHigh"
-            value={electricityHigh}
-            onChange={(e) => setElectricityHigh(e.target.value)}
-            step="1"
-            min="0"
-            placeholder={lastReading ? lastReading.electricityHigh.toString() : "0"}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-          {errors.electricityHigh && <p className="text-red-500 text-sm mt-1">{errors.electricityHigh}</p>}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="electricityHigh" className="block text-sm font-medium text-yellow-700 dark:text-yellow-400 mb-1">
+              Electricity High (kWh)
+            </label>
+            <input
+              type="number"
+              id="electricityHigh"
+              value={electricityHigh}
+              onChange={(e) => setElectricityHigh(e.target.value)}
+              step="1"
+              min="0"
+              placeholder={lastReading ? lastReading.electricityHigh.toString() : "0"}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+            {errors.electricityHigh && <p className="text-red-500 text-sm mt-1">{errors.electricityHigh}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="electricityLow" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+              Electricity Low (kWh)
+            </label>
+            <input
+              type="number"
+              id="electricityLow"
+              value={electricityLow}
+              onChange={(e) => setElectricityLow(e.target.value)}
+              step="1"
+              min="0"
+              placeholder={lastReading?.electricityLow?.toString() || "0"}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {errors.electricityLow && <p className="text-red-500 text-sm mt-1">{errors.electricityLow}</p>}
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="electricityLow" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
-            Electricity Low (kWh)
-          </label>
-          <input
-            type="number"
-            id="electricityLow"
-            value={electricityLow}
-            onChange={(e) => setElectricityLow(e.target.value)}
-            step="1"
-            min="0"
-            placeholder={lastReading?.electricityLow?.toString() || "0"}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          {errors.electricityLow && <p className="text-red-500 text-sm mt-1">{errors.electricityLow}</p>}
-        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="gas" className="block text-sm font-medium text-orange-700 dark:text-orange-400 mb-1">
+              Gas (m³)
+            </label>
+            <input
+              type="number"
+              id="gas"
+              value={gas}
+              onChange={(e) => setGas(e.target.value)}
+              step="1"
+              min="0"
+              placeholder={lastReading ? lastReading.gas.toString() : "0"}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+            {errors.gas && <p className="text-red-500 text-sm mt-1">{errors.gas}</p>}
+          </div>
 
-        <div>
-          <label htmlFor="gas" className="block text-sm font-medium text-orange-700 dark:text-orange-400 mb-1">
-            Gas (m³)
-          </label>
-          <input
-            type="number"
-            id="gas"
-            value={gas}
-            onChange={(e) => setGas(e.target.value)}
-            step="1"
-            min="0"
-            placeholder={lastReading ? lastReading.gas.toString() : "0"}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-          {errors.gas && <p className="text-red-500 text-sm mt-1">{errors.gas}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="water" className="block text-sm font-medium text-cyan-700 dark:text-cyan-400 mb-1">
-            Water (m³)
-          </label>
-          <input
-            type="number"
-            id="water"
-            value={water}
-            onChange={(e) => setWater(e.target.value)}
-            step="1"
-            min="0"
-            placeholder={lastReading?.water?.toString() || "0"}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          {errors.water && <p className="text-red-500 text-sm mt-1">{errors.water}</p>}
+          <div>
+            <label htmlFor="water" className="block text-sm font-medium text-cyan-700 dark:text-cyan-400 mb-1">
+              Water (m³)
+            </label>
+            <input
+              type="number"
+              id="water"
+              value={water}
+              onChange={(e) => setWater(e.target.value)}
+              step="1"
+              min="0"
+              placeholder={lastReading?.water?.toString() || "0"}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {errors.water && <p className="text-red-500 text-sm mt-1">{errors.water}</p>}
+          </div>
         </div>
 
         <div className="flex gap-3 pt-2">
