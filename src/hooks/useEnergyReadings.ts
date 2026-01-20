@@ -30,7 +30,8 @@ const transformRowToReading = (row: EnergyReadingRow): EnergyReading => ({
   updated_at: row.updated_at,
 });
 
-type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_high' | 'electricity_low' | 'gas' | 'house_id'>> & {
+type PartialEnergyReadingRow = Partial<Pick<EnergyReadingRow, 'date' | 'electricity_high' | 'gas' | 'house_id'>> & {
+  electricity_low?: number | null;
   water?: number | null;
 };
 

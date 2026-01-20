@@ -356,7 +356,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                         {reading.electricityHigh.toFixed(0)}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                        {reading.electricityLow !== null ? reading.electricityLow.toFixed(0) : '-'}
+                        {reading.electricityLow !== null && reading.electricityLow !== undefined ? reading.electricityLow.toFixed(0) : '-'}
                       </td>
                       <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                         {reading.gas.toFixed(0)}

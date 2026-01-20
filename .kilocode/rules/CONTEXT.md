@@ -11,6 +11,7 @@ This application helps users monitor their energy consumption over time. It prov
 - Manage multiple houses/properties
 - Set starting meter readings for initial setup
 - View monthly and yearly consumption summaries per house
+- View overall statistics across all houses
 
 ## Key Features
 
@@ -23,7 +24,8 @@ This application helps users monitor their energy consumption over time. It prov
    - Water (m³) - optional
 4. **Monthly Overview**: See consumption breakdown for each month
 5. **Yearly Overview**: View annual totals with comparisons
-6. **Data Persistence**: All data is stored in Supabase with user authentication
+6. **Overall Statistics**: View aggregated usage statistics across all houses
+7. **Data Persistence**: All data is stored in Supabase with user authentication
 
 ## Tech Stack
 
@@ -41,14 +43,17 @@ src/
 │   ├── globals.css      # Global styles with Tailwind
 │   ├── layout.tsx       # Root layout
 │   ├── page.tsx         # Main page with state management
-│   └── houses/
-│       └── [id]/
-│           └── page.tsx # House-specific energy tracking
+│   ├── houses/
+│   │   └── [id]/
+│   │       └── page.tsx # House-specific energy tracking
+│   └── statistics/
+│       └── page.tsx     # Overall statistics across all houses
 ├── components/
 │   ├── EnergyInputForm.tsx      # Form for logging readings
 │   ├── EnergyOverview.tsx       # Monthly/yearly summaries
 │   ├── HouseForm.tsx           # Form for managing houses
-│   └── HouseList.tsx           # List of user's houses
+│   ├── HouseList.tsx           # List of user's houses
+│   └── Navigation.tsx          # Navigation component
 └── types/
     └── energy.ts        # TypeScript interfaces
 ```
@@ -66,6 +71,7 @@ src/
 2. **Set Start Numbers**: Click "Edit" on the Start Numbers card to configure your initial meter readings
 3. **Log Usage**: Fill out the form with the current date and meter values
 4. **View Overview**: Scroll down to see monthly breakdowns and yearly summaries
+5. **View Statistics**: Navigate to the Statistics page to see overall usage across all houses
 
 ## Data Model
 
