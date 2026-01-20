@@ -45,7 +45,9 @@ src/
 │   ├── page.tsx         # Main page with state management
 │   ├── houses/
 │   │   └── [id]/
-│   │       └── page.tsx # House-specific energy tracking
+│   │       ├── page.tsx         # House-specific energy tracking
+│   │       └── statistics/
+│   │           └── page.tsx     # House-specific statistics
 │   └── statistics/
 │       └── page.tsx     # Overall statistics across all houses
 ├── components/
@@ -71,7 +73,8 @@ src/
 2. **Set Start Numbers**: Click "Edit" on the Start Numbers card to configure your initial meter readings
 3. **Log Usage**: Fill out the form with the current date and meter values
 4. **View Overview**: Scroll down to see monthly breakdowns and yearly summaries
-5. **View Statistics**: Navigate to the Statistics page to see overall usage across all houses
+5. **View House Statistics**: Use the house selector in the navigation and click "Statistics" to view statistics for a specific house
+6. **View Overall Statistics**: Navigate to the Statistics page to see overall usage across all houses
 
 ## Data Model
 

@@ -35,9 +35,14 @@ function Navigation() {
                                 <Link href="/houses" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                                     Houses
                                 </Link>
-                                <Link href="/statistics" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                                    Statistics
-                                </Link>
+                                {user && selectedHouse && (
+                                    <Link
+                                        href={`/houses/${selectedHouse}/statistics`}
+                                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                                    >
+                                        Statistics
+                                    </Link>
+                                )}
                             </div>
                         )}
                     </div>

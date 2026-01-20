@@ -1,49 +1,70 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
-import { useHouses } from "@/hooks/useHouses";
+import { supabase } from "@/lib/supabase";
 import { useEnergyReadings } from "@/hooks/useEnergyReadings";
 import Auth from "@/components/Auth";
-import { EnergyReading, YearlySummary, MonthlySummary } from "@/types/energy";
+import { EnergyReading, YearlySummary, MonthlySummary, House } from "@/types/energy";
 
-export default function StatisticsPage() {
+export default function HouseStatisticsPage() {
+  const params = useParams();
+  const houseId = params.id as string;
   const { user, loading: authLoading } = useAuth();
-  const { houses, loading: housesLoading } = useHouses();
-  const { readings, loading: readingsLoading } = useEnergyReadings();
+  const [house, setHouse] = useState<House | null>(null);
+  const [houseLoading, setHouseLoading] = useState(true);
+  const [houseError, setHouseError] = useState<string | null>(null);
+
+  const { readings, loading: readingsLoading } = useEnergyReadings(houseId);
 
   const [yearlySummaries, setYearlySummaries] = useState<YearlySummary[]>([]);
   const [monthlyComparisons, setMonthlyComparisons] = useState<Record<string, MonthlySummary[]>>({}); // TODO: Define MonthlySummary type or import from "@/types/energy"
 
   useEffect(() => {
-    if (!readings.length || !houses.length) {
+    if (!user || !houseId) {
+      setHouseLoading(false);
+      return;
+    }
+
+    const fetchHouse = async () => {
+      setHouseLoading(true);
+      const { data, error } = await supabase
+        .from('houses')
+        .select('*')
+        .eq('id', houseId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        setHouseError(error.message);
+      } else if (!data) {
+        setHouseError('House not found or access denied');
+      } else {
+        setHouse(data);
+        setHouseError(null);
+      }
+      setHouseLoading(false);
+    };
+
+    fetchHouse();
+  }, [user, houseId]);
+
+  useEffect(() => {
+    if (!readings.length) {
       setYearlySummaries([]);
       return;
     }
 
-    // Group readings by house
-    const readingsByHouse: Record<string, EnergyReading[]> = {};
-    readings.forEach(reading => {
-      if (!readingsByHouse[reading.house_id]) {
-        readingsByHouse[reading.house_id] = [];
-      }
-      readingsByHouse[reading.house_id].push(reading);
-    });
+    // Calculate yearly summaries for this house
+    const houseYearlySummaries = calculateYearlySummaries(readings);
 
-    // Calculate yearly summaries for each house
-    const houseYearlySummaries: Record<string, YearlySummary[]> = {};
-    Object.entries(readingsByHouse).forEach(([houseId, houseReadings]) => {
-      houseYearlySummaries[houseId] = calculateYearlySummaries(houseReadings);
-    });
-
-    // Aggregate across all houses
-    const aggregatedSummaries = aggregateYearlySummaries(Object.values(houseYearlySummaries));
-
-    setYearlySummaries(aggregatedSummaries);
+    setYearlySummaries(houseYearlySummaries);
 
     // Calculate monthly comparisons
     const comparisons: Record<string, MonthlySummary[]> = {};
-    aggregatedSummaries.forEach(yearSummary => {
+    houseYearlySummaries.forEach(yearSummary => {
       yearSummary.monthlyBreakdown.forEach(monthly => {
         const monthKey = monthly.month.substring(5, 7); // MM
         if (!comparisons[monthKey]) {
@@ -59,7 +80,7 @@ export default function StatisticsPage() {
     });
 
     setMonthlyComparisons(comparisons);
-  }, [readings, houses]);
+  }, [readings]);
 
   const calculateYearlySummaries = (readings: EnergyReading[]): YearlySummary[] => {
     const sortedReadings = [...readings].sort((a, b) => a.date.localeCompare(b.date));
@@ -122,54 +143,7 @@ export default function StatisticsPage() {
     return yearlySummaries.sort((a, b) => b.year.localeCompare(a.year));
   };
 
-  const aggregateYearlySummaries = (houseSummaries: YearlySummary[][]): YearlySummary[] => {
-    const yearMap: Record<string, YearlySummary> = {};
-
-    houseSummaries.forEach(summaries => {
-      summaries.forEach(summary => {
-        if (!yearMap[summary.year]) {
-          yearMap[summary.year] = {
-            year: summary.year,
-            electricityHigh: 0,
-            electricityLow: null,
-            electricityTotal: 0,
-            gas: 0,
-            water: 0,
-            monthlyBreakdown: [],
-          };
-        }
-
-        yearMap[summary.year].electricityHigh += summary.electricityHigh;
-        yearMap[summary.year].electricityLow = (yearMap[summary.year].electricityLow ?? 0) + (summary.electricityLow ?? 0);
-        yearMap[summary.year].electricityTotal += summary.electricityTotal;
-        yearMap[summary.year].gas += summary.gas;
-        yearMap[summary.year].water += summary.water;
-
-        // Aggregate monthly breakdowns
-        summary.monthlyBreakdown.forEach(monthly => {
-          const existingMonth = yearMap[summary.year].monthlyBreakdown.find(m => m.month === monthly.month);
-          if (existingMonth) {
-            existingMonth.electricityHigh += monthly.electricityHigh;
-            existingMonth.electricityLow = (existingMonth.electricityLow ?? 0) + (monthly.electricityLow ?? 0);
-            existingMonth.electricityTotal += monthly.electricityTotal;
-            existingMonth.gas += monthly.gas;
-            existingMonth.water += monthly.water;
-          } else {
-            yearMap[summary.year].monthlyBreakdown.push({ ...monthly });
-          }
-        });
-      });
-    });
-
-    // Sort monthly breakdowns by month
-    Object.values(yearMap).forEach(summary => {
-      summary.monthlyBreakdown.sort((a, b) => a.month.localeCompare(b.month));
-    });
-
-    return Object.values(yearMap).sort((a, b) => b.year.localeCompare(a.year));
-  };
-
-  if (authLoading || housesLoading || readingsLoading) {
+  if (authLoading || houseLoading || readingsLoading) {
     return (
       <main className="min-h-screen p-8">
         <div className="max-w-4xl mx-auto">
@@ -189,20 +163,91 @@ export default function StatisticsPage() {
     );
   }
 
+  if (houseError) {
+    return (
+      <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Error
+            </h1>
+            <p className="text-red-600 dark:text-red-400 mb-6">
+              {houseError}
+            </p>
+            <Link
+              href="/houses"
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              ← Back to Houses
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!house) {
+    return (
+      <main className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              House Not Found
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              The house you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+            </p>
+            <Link
+              href="/houses"
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              ← Back to Houses
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen p-4 md:p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
+        {/* Breadcrumb/Header */}
         <header className="mb-8">
+          <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <Link
+              href="/houses"
+              className="hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              Houses
+            </Link>
+            <span>/</span>
+            <Link
+              href={`/houses/${houseId}`}
+              className="hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              {house.name}
+            </Link>
+            <span>/</span>
+            <span className="text-gray-900 dark:text-white font-medium">
+              Statistics
+            </span>
+          </nav>
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Statistics
+                {house.name} Statistics
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
-                Overall energy consumption across all your houses
+                Energy consumption statistics for {house.name}
               </p>
             </div>
+            <Link
+              href={`/houses/${houseId}`}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+            >
+              ← Back to {house.name}
+            </Link>
           </div>
         </header>
 
@@ -210,7 +255,7 @@ export default function StatisticsPage() {
         {yearlySummaries.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-              No data available. Add readings to your houses to see statistics.
+              No data available. Add readings to {house.name} to see statistics.
             </p>
           </div>
         ) : (
@@ -220,7 +265,7 @@ export default function StatisticsPage() {
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
             >
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                {yearly.year} Overall Summary
+                {yearly.year} Summary
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
