@@ -165,7 +165,7 @@ export default function EnergyInputForm({
 
         <div>
           <label htmlFor="electricityLow" className="block text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
-            Electricity Low (kWh) - Optional
+            Electricity Low (kWh)
           </label>
           <input
             type="number"
