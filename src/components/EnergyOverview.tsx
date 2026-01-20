@@ -88,6 +88,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
   const [allReadingsExpanded, setAllReadingsExpanded] = useState(false);
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [activeTab, setActiveTab] = useState(yearlySummaries[0]?.year || '');
 
   const formatMonth = (monthStr: string) => {
     const [year, month] = monthStr.split("-");
@@ -122,140 +123,145 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
 
   return (
     <div className="space-y-6">
-      {/* Yearly Summary */}
-      {yearlySummaries.map((yearly, index) => (
-        <div
-          key={yearly.year}
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {yearly.year} Summary
-            </h2>
-            <button
-              onClick={() => setYearlyExpanded(prev => prev.map((v, i) => i === index ? !v : v))}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
-            >
-              {yearlyExpanded[index] ? 'Collapse' : 'Expand'}
-            </button>
+      {/* Yearly Summary Tabs */}
+      {yearlySummaries.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex space-x-1 mb-4 border-b border-gray-200 dark:border-gray-700">
+            {yearlySummaries.map((yearly) => (
+              <button
+                key={yearly.year}
+                onClick={() => setActiveTab(yearly.year)}
+                className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+                  activeTab === yearly.year
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+              >
+                {yearly.year}
+              </button>
+            ))}
           </div>
-          {yearlyExpanded[index] && (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
-                    Electricity High
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityHigh.toFixed(0)}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
+          {(() => {
+            const yearly = yearlySummaries.find(y => y.year === activeTab);
+            if (!yearly) return null;
+            return (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
+                      Electricity High
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {yearly.electricityHigh.toFixed(0)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
+                      Electricity Low
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {yearly.electricityLow !== null ? yearly.electricityLow.toFixed(0) : '-'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
+                  </div>
+                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                    <p className="text-sm text-purple-700 dark:text-purple-400 font-medium">
+                      Total Electricity
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {yearly.electricityTotal.toFixed(0)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
+                  </div>
+                  <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+                    <p className="text-sm text-orange-700 dark:text-orange-400 font-medium">
+                      Gas
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {yearly.gas.toFixed(0)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
+                  </div>
+                  <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4">
+                    <p className="text-sm text-cyan-700 dark:text-cyan-400 font-medium">
+                      Water
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {yearly.water?.toFixed(0) ?? "N/A"}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
+                  </div>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                  <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
-                    Electricity Low
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityLow !== null ? yearly.electricityLow.toFixed(0) : '-'}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
-                </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                  <p className="text-sm text-purple-700 dark:text-purple-400 font-medium">
-                    Total Electricity
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityTotal.toFixed(0)}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
-                </div>
-                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-                  <p className="text-sm text-orange-700 dark:text-orange-400 font-medium">
-                    Gas
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.gas.toFixed(0)}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
-                </div>
-                <div className="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4">
-                  <p className="text-sm text-cyan-700 dark:text-cyan-400 font-medium">
-                    Water
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.water?.toFixed(0) ?? "N/A"}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">m³ used</p>
-                </div>
-              </div>
 
-              {/* Monthly Breakdown */}
-              <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">
-                Monthly Breakdown
-              </h3>
-              {yearly.monthlyBreakdown.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="text-left py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
-                          Month
-                        </th>
-                        <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
-                          High (kWh)
-                        </th>
-                        <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
-                          Low (kWh)
-                        </th>
-                        <th className="text-right py-2 px-2 font-medium text-purple-700 dark:text-purple-400">
-                          Total (kWh)
-                        </th>
-                        <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
-                          Gas (m³)
-                        </th>
-                        <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
-                          Water (m³)
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {yearly.monthlyBreakdown.map((monthly) => (
-                        <tr
-                          key={monthly.month}
-                          className="border-b border-gray-100 dark:border-gray-700/50"
-                        >
-                          <td className="py-2 px-2 text-gray-900 dark:text-white">
-                            {formatMonth(monthly.month)}
-                          </td>
-                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityHigh.toFixed(0)}
-                          </td>
-                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityLow !== null ? monthly.electricityLow.toFixed(0) : '-'}
-                          </td>
-                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.electricityTotal.toFixed(0)}
-                          </td>
-                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.gas.toFixed(0)}
-                          </td>
-                          <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                            {monthly.water.toFixed(0)}
-                          </td>
+                {/* Monthly Breakdown */}
+                <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+                  Monthly Breakdown
+                </h3>
+                {yearly.monthlyBreakdown.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-gray-700">
+                          <th className="text-left py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
+                            Month
+                          </th>
+                          <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
+                            High (kWh)
+                          </th>
+                          <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
+                            Low (kWh)
+                          </th>
+                          <th className="text-right py-2 px-2 font-medium text-purple-700 dark:text-purple-400">
+                            Total (kWh)
+                          </th>
+                          <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
+                            Gas (m³)
+                          </th>
+                          <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
+                            Water (m³)
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
-                  Need at least 2 readings to calculate monthly usage
-                </p>
-              )}
-            </>
-          )}
+                      </thead>
+                      <tbody>
+                        {yearly.monthlyBreakdown.map((monthly) => (
+                          <tr
+                            key={monthly.month}
+                            className="border-b border-gray-100 dark:border-gray-700/50"
+                          >
+                            <td className="py-2 px-2 text-gray-900 dark:text-white">
+                              {formatMonth(monthly.month)}
+                            </td>
+                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {monthly.electricityHigh.toFixed(0)}
+                            </td>
+                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {monthly.electricityLow !== null ? monthly.electricityLow.toFixed(0) : '-'}
+                            </td>
+                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {monthly.electricityTotal.toFixed(0)}
+                            </td>
+                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {monthly.gas.toFixed(0)}
+                            </td>
+                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {monthly.water.toFixed(0)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Need at least 2 readings to calculate monthly usage
+                  </p>
+                )}
+              </>
+            );
+          })()}
         </div>
-      ))}
+      )}
 
       {/* All Readings */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
