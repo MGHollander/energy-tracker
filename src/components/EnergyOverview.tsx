@@ -21,22 +21,35 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
   for (let i = 1; i < sortedReadings.length; i++) {
     const current = sortedReadings[i];
     const previous = sortedReadings[i - 1];
-    // The usage belongs to the month of the previous reading
-    // (e.g., usage between Feb 28 and March 1st = February's usage)
-    const month = previous.date.substring(0, 7); // YYYY-MM
+    // The usage belongs to the month of the current reading
+    // (e.g., usage between Feb 28 and March 1st = March's usage)
+    const month = current.date.substring(0, 7); // YYYY-MM
 
-    // Only include if this is the first delta for a given month
-    const existingMonth = monthlySummaries.find(m => m.month === month);
+    // Find existing month or create new one
+    let existingMonth = monthlySummaries.find(m => m.month === month);
     if (!existingMonth) {
-      monthlySummaries.push({
+      existingMonth = {
         month,
-        electricityHigh: current.electricityHigh - previous.electricityHigh,
-        electricityLow: (current.electricityLow ?? 0) - (previous.electricityLow ?? 0),
-        electricityTotal: (current.electricityHigh - previous.electricityHigh) + ((current.electricityLow ?? 0) - (previous.electricityLow ?? 0)),
-        gas: current.gas - previous.gas,
-        water: (current.water ?? 0) - (previous.water ?? 0),
-      });
+        electricityHigh: 0,
+        electricityLow: 0,
+        electricityTotal: 0,
+        gas: 0,
+        water: 0,
+      };
+      monthlySummaries.push(existingMonth);
     }
+
+    // Add the delta to the month
+    const deltaHigh = current.electricityHigh - previous.electricityHigh;
+    const deltaLow = (current.electricityLow ?? 0) - (previous.electricityLow ?? 0);
+    const deltaGas = current.gas - previous.gas;
+    const deltaWater = (current.water ?? 0) - (previous.water ?? 0);
+
+    existingMonth.electricityHigh += deltaHigh;
+    existingMonth.electricityLow! += deltaLow;
+    existingMonth.electricityTotal += deltaHigh + deltaLow;
+    existingMonth.gas += deltaGas;
+    existingMonth.water += deltaWater;
   }
 
   monthlySummaries.sort((a, b) => b.month.localeCompare(a.month));
@@ -131,11 +144,10 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
               <button
                 key={yearly.year}
                 onClick={() => setActiveTab(yearly.year)}
-                className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
-                  activeTab === yearly.year
+                className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${activeTab === yearly.year
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
+                  }`}
               >
                 {yearly.year}
               </button>
