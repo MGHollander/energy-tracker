@@ -107,12 +107,6 @@ export default function HouseReadingsPage() {
             <p className="text-red-600 dark:text-red-400 mb-6">
               {houseError}
             </p>
-            <Link
-              href="/houses"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              ← Back to Houses
-            </Link>
           </div>
         </div>
       </main>
@@ -130,12 +124,6 @@ export default function HouseReadingsPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               The house you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
             </p>
-            <Link
-              href="/houses"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              ← Back to Houses
-            </Link>
           </div>
         </div>
       </main>
@@ -168,12 +156,6 @@ export default function HouseReadingsPage() {
                 Track energy consumption for {house.name}
               </p>
             </div>
-            <Link
-              href="/houses"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-            >
-              ← Back to Houses
-            </Link>
           </div>
         </header>
 
