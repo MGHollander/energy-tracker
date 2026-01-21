@@ -145,8 +145,8 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                 key={yearly.year}
                 onClick={() => setActiveTab(yearly.year)}
                 className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${activeTab === yearly.year
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
               >
                 {yearly.year}
@@ -158,7 +158,7 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
             if (!yearly) return null;
             return (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                     <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
                       Electricity High
@@ -179,15 +179,6 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                   </div>
                   <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
                     <p className="text-sm text-purple-700 dark:text-purple-400 font-medium">
-                      Total Electricity
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {yearly.electricityTotal.toFixed(0)}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
-                  </div>
-                  <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-                    <p className="text-sm text-orange-700 dark:text-orange-400 font-medium">
                       Gas
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -224,9 +215,6 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                           <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
                             Low (kWh)
                           </th>
-                          <th className="text-right py-2 px-2 font-medium text-purple-700 dark:text-purple-400">
-                            Total (kWh)
-                          </th>
                           <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                             Gas (m³)
                           </th>
@@ -249,9 +237,6 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                             </td>
                             <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                               {monthly.electricityLow !== null ? monthly.electricityLow.toFixed(0) : '-'}
-                            </td>
-                            <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                              {monthly.electricityTotal.toFixed(0)}
                             </td>
                             <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                               {monthly.gas.toFixed(0)}

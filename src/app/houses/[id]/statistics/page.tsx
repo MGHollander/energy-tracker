@@ -267,7 +267,7 @@ export default function HouseStatisticsPage() {
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 {yearly.year} Summary
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
                     Electricity High
@@ -283,15 +283,6 @@ export default function HouseStatisticsPage() {
                   </p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {yearly.electricityLow !== null ? yearly.electricityLow.toFixed(0) : '-'}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
-                </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                  <p className="text-sm text-purple-700 dark:text-purple-400 font-medium">
-                    Total Electricity
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {yearly.electricityTotal.toFixed(0)}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                 </div>
@@ -345,9 +336,6 @@ export default function HouseStatisticsPage() {
                             <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
                               Low (kWh)
                             </th>
-                            <th className="text-right py-2 px-2 font-medium text-purple-700 dark:text-purple-400">
-                              Total (kWh)
-                            </th>
                             <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
                               Gas (m³)
                             </th>
@@ -366,7 +354,6 @@ export default function HouseStatisticsPage() {
                             const prevYear = summaries[index + 1];
                             const change = prevYear ? {
                               electricityHigh: ((summary.electricityHigh - prevYear.electricityHigh) / prevYear.electricityHigh * 100),
-                              electricityLow: prevYear.electricityLow && summary.electricityLow ? ((summary.electricityLow - prevYear.electricityLow) / prevYear.electricityLow * 100) : null,
                               electricityTotal: ((summary.electricityTotal - prevYear.electricityTotal) / prevYear.electricityTotal * 100),
                               gas: ((summary.gas - prevYear.gas) / prevYear.gas * 100),
                               water: prevYear.water && summary.water ? ((summary.water - prevYear.water) / prevYear.water * 100) : null,
@@ -384,23 +371,22 @@ export default function HouseStatisticsPage() {
                                   {summary.electricityLow !== null ? summary.electricityLow.toFixed(0) : '-'}
                                 </td>
                                 <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.electricityTotal.toFixed(0)}
-                                </td>
-                                <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
                                   {summary.gas.toFixed(0)}
                                 </td>
                                 <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.water.toFixed(0)}
+                                  {summary.water?.toFixed(0) ?? "N/A"}
                                 </td>
                                 {change && (
                                   <td className="py-2 px-2 text-right">
                                     <div className="space-y-1">
-                                      <div className={`text-xs ${change.electricityTotal >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                                        {change.electricityTotal >= 0 ? '+' : ''}{change.electricityTotal.toFixed(1)}%
-                                      </div>
                                       <div className={`text-xs ${change.gas >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                                         {change.gas >= 0 ? '+' : ''}{change.gas.toFixed(1)}%
                                       </div>
+                                      {change.water && (
+                                        <div className={`text-xs ${change.water >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                          {change.water >= 0 ? '+' : ''}{change.water.toFixed(1)}%
+                                        </div>
+                                      )}
                                     </div>
                                   </td>
                                 )}
