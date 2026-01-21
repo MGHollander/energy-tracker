@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { useEnergyReadings } from "@/hooks/useEnergyReadings";
 import Auth from "@/components/Auth";
 import { EnergyReading, YearlySummary, MonthlySummary, House } from "@/types/energy";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function HouseStatisticsPage() {
   const params = useParams();
