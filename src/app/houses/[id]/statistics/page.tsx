@@ -315,89 +315,88 @@ export default function HouseStatisticsPage() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Monthly Year-over-Year Comparisons
             </h2>
-            <div className="space-y-6">
-              {Object.entries(monthlyComparisons)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([month, summaries]) => (
-                  <div key={month} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                      {new Date(2024, parseInt(month) - 1).toLocaleDateString("en-US", { month: "long" })}
-                    </h3>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-200 dark:border-gray-700">
-                            <th className="text-left py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
-                              Year
-                            </th>
-                            <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
-                              High (kWh)
-                            </th>
-                            <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
-                              Low (kWh)
-                            </th>
-                            <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
-                              Gas (m³)
-                            </th>
-                            <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
-                              Water (m³)
-                            </th>
-                            {summaries.length > 1 && (
-                              <th className="text-right py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
-                                Change vs Prev Year
-                              </th>
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {summaries.map((summary, index) => {
-                            const prevYear = summaries[index + 1];
-                            const change = prevYear ? {
-                              electricityHigh: ((summary.electricityHigh - prevYear.electricityHigh) / prevYear.electricityHigh * 100),
-                              electricityTotal: ((summary.electricityTotal - prevYear.electricityTotal) / prevYear.electricityTotal * 100),
-                              gas: ((summary.gas - prevYear.gas) / prevYear.gas * 100),
-                              water: prevYear.water && summary.water ? ((summary.water - prevYear.water) / prevYear.water * 100) : null,
-                            } : null;
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="top-0 bg-white dark:bg-gray-800">
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
+                      Year
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-yellow-700 dark:text-yellow-400">
+                      High (kWh)
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-blue-700 dark:text-blue-400">
+                      Low (kWh)
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-orange-700 dark:text-orange-400">
+                      Gas (m³)
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-cyan-700 dark:text-cyan-400">
+                      Water (m³)
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
+                      Change vs Prev Year
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(monthlyComparisons)
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .flatMap(([month, summaries]) => [
+                      <tr key={`month-${month}`} className="bg-gray-50 dark:bg-gray-700/50">
+                        <td colSpan={6} className="p-2 font-medium text-gray-900 dark:text-white">
+                          {new Date(2024, parseInt(month) - 1).toLocaleDateString("en-US", { month: "long" })}
+                        </td>
+                      </tr>,
+                      ...summaries.map((summary, index) => {
+                        const prevYear = summaries[index + 1];
+                        const change = prevYear ? {
+                          electricityHigh: ((summary.electricityHigh - prevYear.electricityHigh) / prevYear.electricityHigh * 100),
+                          electricityTotal: ((summary.electricityTotal - prevYear.electricityTotal) / prevYear.electricityTotal * 100),
+                          gas: ((summary.gas - prevYear.gas) / prevYear.gas * 100),
+                          water: prevYear.water && summary.water ? ((summary.water - prevYear.water) / prevYear.water * 100) : null,
+                        } : null;
 
-                            return (
-                              <tr key={summary.month} className="border-b border-gray-100 dark:border-gray-700/50">
-                                <td className="py-2 px-2 text-gray-900 dark:text-white font-medium">
-                                  {summary.month.substring(0, 4)}
-                                </td>
-                                <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.electricityHigh.toFixed(0)}
-                                </td>
-                                <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.electricityLow !== null ? summary.electricityLow.toFixed(0) : '-'}
-                                </td>
-                                <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.gas.toFixed(0)}
-                                </td>
-                                <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300">
-                                  {summary.water?.toFixed(0) ?? "N/A"}
-                                </td>
-                                {change && (
-                                  <td className="py-2 px-2 text-right">
-                                    <div className="space-y-1">
-                                      <div className={`text-xs ${change.gas >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                                        {change.gas >= 0 ? '+' : ''}{change.gas.toFixed(1)}%
-                                      </div>
-                                      {change.water && (
-                                        <div className={`text-xs ${change.water >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                                          {change.water >= 0 ? '+' : ''}{change.water.toFixed(1)}%
-                                        </div>
-                                      )}
+                        return (
+                          <tr key={summary.month} className="border-b border-gray-100 dark:border-gray-700/50">
+                            <td className="py-4 px-2 text-gray-900 dark:text-white font-medium">
+                              {summary.month.substring(0, 4)}
+                            </td>
+                            <td className="py-4 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {summary.electricityHigh.toFixed(0)}
+                            </td>
+                            <td className="py-4 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {summary.electricityLow !== null ? summary.electricityLow.toFixed(0) : '-'}
+                            </td>
+                            <td className="py-4 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {summary.gas.toFixed(0)}
+                            </td>
+                            <td className="py-4 px-2 text-right text-gray-700 dark:text-gray-300">
+                              {summary.water?.toFixed(0) ?? "N/A"}
+                            </td>
+                            <td className="py-4 px-2 text-right">
+                              {change ? (
+                                <div className="space-y-1">
+                                  <div className={`text-xs ${change.gas >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                    {change.gas >= 0 ? '+' : ''}{change.gas.toFixed(1)}%
+                                  </div>
+                                  {change.water && (
+                                    <div className={`text-xs ${change.water >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                                      {change.water >= 0 ? '+' : ''}{change.water.toFixed(1)}%
                                     </div>
-                                  </td>
-                                )}
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ])
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         )}
