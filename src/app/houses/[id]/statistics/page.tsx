@@ -317,7 +317,7 @@ export default function HouseStatisticsPage() {
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="top-0 bg-white dark:bg-gray-800">
+                <thead className="bg-white dark:bg-gray-800">
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-2 px-2 font-medium text-gray-700 dark:text-gray-300">
                       Year
