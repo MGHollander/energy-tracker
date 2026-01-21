@@ -129,8 +129,8 @@ export default function EnergyInputForm({
         Enter the meter readings as shown on your meters. Usage will be calculated automatically.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
           <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Date
           </label>
@@ -215,7 +215,7 @@ export default function EnergyInputForm({
           {errors.water && <p className="text-red-500 text-sm mt-1">{errors.water}</p>}
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="col-span-2 flex">
           <button
             type="submit"
             disabled={isSubmitting}
