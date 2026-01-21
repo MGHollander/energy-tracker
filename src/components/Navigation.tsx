@@ -16,7 +16,7 @@ function Navigation() {
 
     useEffect(() => {
         if (houses.length > 0) {
-            let houseId = '';
+            let houseId = selectedHouse; // Start with current selection
             if (pathname.startsWith('/houses/')) {
                 const pathParts = pathname.split('/');
                 if (pathParts.length >= 3) {
@@ -25,14 +25,14 @@ function Navigation() {
                         houseId = id;
                     }
                 }
-            }
-            if (!houseId) {
+            } else if (!houseId || !houses.some(h => h.id === houseId)) {
+                // If no current selection or invalid, set to default
                 const defaultHouse = houses.find(h => h.is_default);
                 houseId = defaultHouse?.id || houses[0]?.id || '';
             }
             setSelectedHouse(houseId);
         }
-    }, [houses, pathname]);
+    }, [houses, pathname, selectedHouse]);
 
     return (
         <header className="bg-white dark:bg-gray-800 shadow">
@@ -44,11 +44,8 @@ function Navigation() {
                         </Link>
                         {user && (
                              <div className="hidden lg:flex items-center space-x-4 ml-10">
-                                 <Link href="/" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                 <Link href={selectedHouse ? `/houses/${selectedHouse}` : "/"} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                                      Dashboard
-                                 </Link>
-                                 <Link href="/houses" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                                     Houses
                                  </Link>
                                  {user && selectedHouse && (
                                      <Link
@@ -58,30 +55,19 @@ function Navigation() {
                                          Statistics
                                      </Link>
                                  )}
+                                <Link href="/houses" className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                     Houses
+                                 </Link>
                              </div>
                          )}
                     </div>
                     <div className="flex items-center">
                         {user && (
                             <>
-                                <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white p-2 rounded-md">
+                                <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white p-2 rounded-md text-3xl">
                                     ☰
                                 </button>
                                 <div className="hidden lg:flex items-center space-x-4">
-                                    {houses.length > 0 && (
-                                        <select
-                                            value={selectedHouse}
-                                            onChange={(e) => {
-                                                setSelectedHouse(e.target.value);
-                                                router.push(`/houses/${e.target.value}`);
-                                            }}
-                                            className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        >
-                                            {houses.map(house => (
-                                                <option key={house.id} value={house.id}>{house.name}</option>
-                                            ))}
-                                        </select>
-                                    )}
                                     <button onClick={signOut} className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap">
                                         Sign Out
                                     </button>
@@ -98,11 +84,8 @@ function Navigation() {
              </nav>
              {isOpen && user && (
                  <div className="lg:hidden bg-white dark:bg-gray-800 px-4 py-2 space-y-2 border-t">
-                     <Link href="/" onClick={() => setIsOpen(false)} className="block text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                     <Link href={selectedHouse ? `/houses/${selectedHouse}` : "/"} onClick={() => setIsOpen(false)} className="block text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                          Dashboard
-                     </Link>
-                     <Link href="/houses" onClick={() => setIsOpen(false)} className="block text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                         Houses
                      </Link>
                      {selectedHouse && (
                          <Link
@@ -113,21 +96,9 @@ function Navigation() {
                              Statistics
                          </Link>
                      )}
-                     {houses.length > 0 && (
-                         <select
-                             value={selectedHouse}
-                             onChange={(e) => {
-                                 setSelectedHouse(e.target.value);
-                                 router.push(`/houses/${e.target.value}`);
-                                 setIsOpen(false);
-                             }}
-                             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                         >
-                             {houses.map(house => (
-                                 <option key={house.id} value={house.id}>{house.name}</option>
-                             ))}
-                         </select>
-                     )}
+                    <Link href="/houses" onClick={() => setIsOpen(false)} className="block text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                         Houses
+                     </Link>
                      <button onClick={() => { signOut(); setIsOpen(false); }} className="block w-full text-left bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium">
                          Sign Out
                      </button>

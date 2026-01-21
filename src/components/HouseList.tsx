@@ -1,4 +1,5 @@
 import { House } from "@/types/energy";
+import Link from "next/link";
 
 interface HouseListProps {
   houses: House[];
@@ -27,7 +28,12 @@ export default function HouseList({ houses, onEdit, onDelete }: HouseListProps) 
           {houses.map((house) => (
             <tr key={house.id}>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                {house.name}
+                <Link
+                  href={`/houses/${house.id}`}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+                >
+                  {house.name}
+                </Link>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                 {house.is_default ? "Yes" : "No"}

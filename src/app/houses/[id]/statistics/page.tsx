@@ -209,25 +209,6 @@ export default function HouseStatisticsPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Breadcrumb/Header */}
         <header className="mb-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-            <Link
-              href="/houses"
-              className="hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              Houses
-            </Link>
-            <span>/</span>
-            <Link
-              href={`/houses/${houseId}`}
-              className="hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              {house.name}
-            </Link>
-            <span>/</span>
-            <span className="text-gray-900 dark:text-white font-medium">
-              Statistics
-            </span>
-          </nav>
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -237,12 +218,6 @@ export default function HouseStatisticsPage() {
                 Energy consumption statistics for {house.name}
               </p>
             </div>
-            <Link
-              href={`/houses/${houseId}`}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-            >
-              ← Back to {house.name}
-            </Link>
           </div>
         </header>
 

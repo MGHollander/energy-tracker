@@ -215,7 +215,7 @@ export default function EnergyInputForm({
           {errors.water && <p className="text-red-500 text-sm mt-1">{errors.water}</p>}
         </div>
 
-        <div className="col-span-2 flex">
+        <div className="col-span-2 flex mt-2">
           <button
             type="submit"
             disabled={isSubmitting}
