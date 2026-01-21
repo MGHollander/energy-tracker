@@ -22,6 +22,8 @@ export default function HouseStatisticsPage() {
 
   const [yearlySummaries, setYearlySummaries] = useState<YearlySummary[]>([]);
   const [monthlyComparisons, setMonthlyComparisons] = useState<Record<string, MonthlySummary[]>>({}); // TODO: Define MonthlySummary type or import from "@/types/energy"
+  const [monthlyData, setMonthlyData] = useState<MonthlySummary[]>([]);
+  const [activeTab, setActiveTab] = useState<'table' | 'chart'>('table');
 
   useEffect(() => {
     if (!user || !houseId) {
@@ -59,9 +61,10 @@ export default function HouseStatisticsPage() {
     }
 
     // Calculate yearly summaries for this house
-    const houseYearlySummaries = calculateYearlySummaries(readings);
+    const { yearlySummaries: houseYearlySummaries, monthlySummaries } = calculateYearlySummaries(readings);
 
     setYearlySummaries(houseYearlySummaries);
+    setMonthlyData(monthlySummaries);
 
     // Calculate monthly comparisons
     const comparisons: Record<string, MonthlySummary[]> = {};
@@ -83,7 +86,7 @@ export default function HouseStatisticsPage() {
     setMonthlyComparisons(comparisons);
   }, [readings]);
 
-  const calculateYearlySummaries = (readings: EnergyReading[]): YearlySummary[] => {
+  const calculateYearlySummaries = (readings: EnergyReading[]): { yearlySummaries: YearlySummary[], monthlySummaries: MonthlySummary[] } => {
     const sortedReadings = [...readings].sort((a, b) => a.date.localeCompare(b.date));
     const yearlySummaries: YearlySummary[] = [];
     const years = [...new Set(sortedReadings.map(r => r.date.substring(0, 4)))].sort();
@@ -141,7 +144,10 @@ export default function HouseStatisticsPage() {
       }
     }
 
-    return yearlySummaries.sort((a, b) => b.year.localeCompare(a.year));
+    return {
+      yearlySummaries: yearlySummaries.sort((a, b) => b.year.localeCompare(a.year)),
+      monthlySummaries
+    };
   };
 
   if (authLoading || houseLoading || readingsLoading) {
@@ -252,14 +258,29 @@ export default function HouseStatisticsPage() {
           </div>
         </header>
 
+        <div className="flex space-x-4 mb-6">
+          <button
+            onClick={() => setActiveTab('table')}
+            className={`px-4 py-2 rounded ${activeTab === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+          >
+            Table
+          </button>
+          <button
+            onClick={() => setActiveTab('chart')}
+            className={`px-4 py-2 rounded ${activeTab === 'chart' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+          >
+            Charts
+          </button>
+        </div>
+
         {/* Yearly Statistics */}
-        {yearlySummaries.length === 0 ? (
+        {activeTab === 'table' && yearlySummaries.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <p className="text-gray-500 dark:text-gray-400 text-center py-8">
               No data available. Add readings to {house.name} to see statistics.
             </p>
           </div>
-        ) : (
+        ) : activeTab === 'table' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Yearly Summaries
@@ -312,7 +333,7 @@ export default function HouseStatisticsPage() {
         )}
 
         {/* Monthly Year-over-Year Comparisons */}
-        {Object.keys(monthlyComparisons).length > 0 && (
+        {activeTab === 'table' && Object.keys(monthlyComparisons).length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Monthly Year-over-Year Comparisons
@@ -401,6 +422,66 @@ export default function HouseStatisticsPage() {
               </table>
             </div>
           </div>
+        )}
+
+        {activeTab === 'chart' && (
+          <>
+            {/* Monthly Trends Chart */}
+            {monthlyData.length > 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Monthly Trends
+                </h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={monthlyData.map(m => ({ month: m.month, 'Electricity High': m.electricityHigh, 'Electricity Low': m.electricityLow || 0, Gas: m.gas, Water: m.water || 0 })) }>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="Electricity High" stroke="#fbbf24" />
+                    <Line type="monotone" dataKey="Electricity Low" stroke="#3b82f6" />
+                    <Line type="monotone" dataKey="Gas" stroke="#f97316" />
+                    <Line type="monotone" dataKey="Water" stroke="#06b6d4" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                  No monthly data available for charts.
+                </p>
+              </div>
+            )}
+
+            {/* Yearly Comparisons Chart */}
+            {yearlySummaries.length > 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Yearly Comparisons
+                </h2>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={yearlySummaries.map(y => ({ year: y.year, 'Electricity High': y.electricityHigh, 'Electricity Low': y.electricityLow || 0, Gas: y.gas, Water: y.water || 0 })) }>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="year" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="Electricity High" fill="#fbbf24" />
+                    <Bar dataKey="Electricity Low" fill="#3b82f6" />
+                    <Bar dataKey="Gas" fill="#f97316" />
+                    <Bar dataKey="Water" fill="#06b6d4" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                  No yearly data available for charts.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>
