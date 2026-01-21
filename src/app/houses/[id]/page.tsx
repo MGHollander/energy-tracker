@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
 import { useEnergyReadings, useCreateEnergyReading, useUpdateEnergyReading } from "@/hooks/useEnergyReadings";
@@ -21,8 +20,8 @@ export default function HouseReadingsPage() {
   const [editingReading, setEditingReading] = useState<EnergyReading | null>(null);
 
   const { readings, loading: readingsLoading, error: readingsError, deleteReading } = useEnergyReadings(houseId);
-  const { create, loading: createLoading } = useCreateEnergyReading();
-  const { update, loading: updateLoading } = useUpdateEnergyReading();
+  const { create } = useCreateEnergyReading();
+  const { update } = useUpdateEnergyReading();
 
   useEffect(() => {
     if (!user || !houseId) {

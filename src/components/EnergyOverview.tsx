@@ -177,8 +177,8 @@ export default function EnergyOverview({ readings, onEdit, onDelete, houseId }: 
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">kWh used</p>
                   </div>
-                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
-                    <p className="text-sm text-purple-700 dark:text-purple-400 font-medium">
+                  <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+                    <p className="text-sm text-orange-700 dark:text-orange-400 font-medium">
                       Gas
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
