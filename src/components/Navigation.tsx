@@ -82,7 +82,7 @@ function Navigation() {
                                             ))}
                                         </select>
                                     )}
-                                    <button onClick={signOut} className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium">
+                                    <button onClick={signOut} className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap">
                                         Sign Out
                                     </button>
                                 </div>
